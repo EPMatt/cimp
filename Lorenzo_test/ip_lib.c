@@ -12,25 +12,31 @@
  **/
 
 /**
- * TODO: trova il minimo di una matrice ip_mat del canale k passato
+ * Dato un puntatore a ip_mat e un canale ritorna il valore più piccolo della matrice presente in quel canale
+ *TODO: se vuota restituiamo 0 o FLT_MIN?
  **/
 float min(ip_mat * a,unsigned int k){
     
-    int i,j;
-    int altezza_matrice, larghezza_matrice;
+    unsigned int i,j;
+    unsigned int altezza_matrice, larghezza_matrice;
+    /*minimo valore psitivo disponibile */
+    float min=FLT_MIN;
     
-    int min =   a->data[k][0][0];
-    
-    
-    altezza_matrice =   a->h;
-    larghezza_matrice   =  a->w;
+    if(a){
 
-    for(i=0;i<altezza_matrice;i++){
+        min =   a->data[k][0][0];
         
-        for(j=0;j<larghezza_matrice;j++){
+        
+        altezza_matrice =   a->h;
+        larghezza_matrice   =  a->w;
+
+        for(i=0;i<altezza_matrice;i++){
             
-            if(min>a->data[k][i][j])
-                min=a->data[k][i][j];
+            for(j=0;j<larghezza_matrice;j++){
+                
+                if(min>a->data[k][i][j])
+                    min=a->data[k][i][j];
+            }
         }
     }
 
@@ -38,27 +44,31 @@ float min(ip_mat * a,unsigned int k){
     
 }
 
-
 /**
-  *TODO: trova il massimo della matrice ip_mat del canale k passato 
-  **/
+ * Dato un puntatore a ip_mat e un canale ritorna il valore più grande della matrice presente in quel canale
+ *TODO: se vuota restituiamo 0 o FLT_max?
+ **/
+
 float max(ip_mat * a,unsigned int k){
 
-    int i,j;
-    int altezza_matrice, larghezza_matrice;
-    
-    int max=a->data[k][0][0];
-    
-    
-    altezza_matrice =   a->h;
-    larghezza_matrice   =  a->w;
+    unsigned int i,j;
+    unsigned int altezza_matrice, larghezza_matrice;
 
-    for(i=0;i<altezza_matrice;i++){
+    float max=FLT_MAX;
+
+    if(a){
+        max=a->data[k][0][0];
         
-        for(j=0;j<larghezza_matrice;j++){
+        altezza_matrice =   a->h;
+        larghezza_matrice   =  a->w;
+
+        for(i=0;i<altezza_matrice;i++){
             
-            if( max  <   a->data[k][i][j] )
-                max=a->data[k][i][j];
+            for(j=0;j<larghezza_matrice;j++){
+                
+                if( max  <   a->data[k][i][j] )
+                    max=a->data[k][i][j];
+            }
         }
     }
 
@@ -67,90 +77,241 @@ float max(ip_mat * a,unsigned int k){
 }
 
 
+/**
+ * Dato un puntatore a ip_mat e un canale ritorna il valore medio di quel canale in base al numero di elementi
+ * 
+ * TODO: Controllare: è giusto fare la media in quel modo?
+ **/ 
+
+
 float mean(ip_mat * a,unsigned int k){
 
-    int i,j;
-    int altezza_matrice, larghezza_matrice;
+    unsigned int i,j;
+    unsigned int altezza_matrice, larghezza_matrice;
+
     int count=0;   
-    int mean=0;
+    float mean=0;
     
-    
-    altezza_matrice =   a->h;
-    larghezza_matrice   =  a->w;
+    if(a){
+        altezza_matrice =   a->h;
+        larghezza_matrice   =  a->w;
 
-    for(i=0;i<altezza_matrice;i++){
-        for(j=0;j<larghezza_matrice;j++){
+        for(i=0;i<altezza_matrice;i++){
+            for(j=0;j<larghezza_matrice;j++){
 
-            mean+=a->data[k][altezza_matrice][larghezza_matrice];
-            count++;
+                mean+=a->data[k][altezza_matrice][larghezza_matrice];
+                count++;
+            }
         }
     }
 
     return (mean/count);
 }
 
-/* Inizializza una ip_mat con dimensioni h w e k. Ogni elemento è inizializzato a v.
+
+
+/**
+ * Calcola stat : data una matrice ip_mat calcola e modifica le statistiche di quel canale
+ * 
+ **/ 
+
+void calcola_stat(ip_mat *a){
+    int l=0;
+    
+    for(l=0;l<a->k;l++){
+
+        a->stat[l].max=max(a,l);
+        a->stat[l].min=min(a,l);
+        a->stat[l].mean=mean(a,l);
+    }
+
+}
+
+
+
+/**
+ * Inizializza una ip_mat con dimensioni h w e k. Ogni elemento è inizializzato a v.
  * Inoltre crea un vettore di stats per contenere le statische sui singoli canali.
  * */
+
 ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
-   int i,j,c;
+   unsigned int i,j,c;
 
    ip_mat *nuova;
-
+   
+   nuova = (ip_mat*) malloc(sizeof(ip_mat)); 
     /**
      * asseggno alla struttura nuova i valori dei campi
      * dell'altezza e larghezzza
-     * */
-    /**creazione delle k matrici + inizializzazione a v**/
-
-   nuova->data=(float ***) malloc(sizeof(unsigned int)*k);
-
-
-    for(c=0;c<k;c++){
-
-        nuova->data[c]= (float**) malloc(sizeof(float)*h);
-    }
-
-
-    for(c=0;c<k;c++){
-
-        for(i=0;i<h;i++){
-
-            nuova->data[k][i]=(float *) malloc(sizeof(float)*w);
-        }
-    }
-
-
-    /*inzializzazione dei valori della matrice*/
-    
-    for(c=0;c<k;c++){
-        for(i=0;i<h;i++){
-            for(j=0;j<w;j++){
-                nuova-> data[k][i][j]    =   v;
-            }
-        }
-    }
-
+     *
+     **/
     nuova->h = h;
     nuova->k = k;
     nuova->w = w;
 
-    
-    /**
-     * riempio i valri di stats per ogni canale;
-     **/
 
-    for(c=0;c<k;c++){
-        nuova->stat->max=max(nuova,c);
-        nuova->stat->min=min(nuova,c);
-        nuova->stat->mean=mean(nuova,c);
-    
+    /**creazione delle k matrici + inizializzazione a v**/
+   
+    if(nuova){
+        /**
+         * Creo la matrice a 3 dimensioni effettiva e i 3 vettori con
+         * le statistiche per canale
+         **/
+        nuova->data=(float ***) malloc(sizeof(float**)*k);
+        
+        nuova->stat=(stats*) malloc(sizeof(stats)*k);
+
+            /**
+             * canale
+             **/
+            for(c=0;c<k;c++){
+
+                nuova->data[c]= (float**) malloc(sizeof(float*)*h);
+            }
+
+
+            for(c=0;c<k;c++){
+
+                for(i=0;i<h;i++){
+
+                    nuova->data[c][i]=(float *) malloc(sizeof(float)*w);
+                }
+            }
+
+
+            /*inzializzazione dei valori della matrice*/
+            
+            for(c=0;c<k;c++){
+                for(i=0;i<h;i++){
+                    for(j=0;j<w;j++){
+                        nuova-> data[k][i][j]    =   v;
+                    }
+                }
+            }
+
+            
+            /**
+             * riempio i valri di stats per ogni canale;
+             * 
+             **/
+
+            for(c=0;c<k;c++){
+                nuova->stat[c].max=v;
+                nuova->stat[c].min=v;
+                nuova->stat[c].mean=mean(nuova,c);
+            }
     }
 
+  return nuova;
+  
 
-
-  return nuova;    
 }
+
+
+
+float random(float mean,float var){
+    return 1.0;
+}
+
+/**
+ * TODO: random(mean, var); 
+ * Inizializza una ip_mat con dimensioni w h e k.
+ * Ogni elemento è generato da una gaussiana con media mean e varianza var 
+ * 
+ * */
+
+void ip_mat_init_random(ip_mat * t, float mean, float var){
+    int i,j,l;
+
+    /**
+     * 
+     * riempio la matrice del canale i-esimo con valori casuali
+     *
+     * */
+
+    for(l=0;l<t->k;l++){
+        for(i=0;i<t->h;i++){
+            for(j=0;j<t->w;j++){
+
+                t->data[l][i][j] = random(mean,var); 
+            }
+        }
+    }
+
+    calcola_stat(t);
+
+}
+
+
+
+
+/**
+ * 
+ *Matematiche aggiungi e moltiplica scalare
+ *
+ **/
+
+/* Moltiplica un ip_mat per uno scalare c. Si moltiplica c per tutti gli elementi di "a"
+ * e si salva il risultato in un nuovo tensore in output. */
+ip_mat * ip_mat_mul_scalar(ip_mat *a, float c){
+    unsigned int i,j,l;
+
+    ip_mat* output;
+
+    output=ip_mat_create(a->h,a->w,a->k,c);
+    
+    for(l=0;l<output->k;l++){
+        
+        for(i=0;i<output->h;i++){
+
+            for(j=0;j<output->w;j++)
+            {
+                output->data[l][i][j]= output->data[l][i][j] * a->data[l][i][j]; 
+            }
+        }
+
+    }
+
+    /**
+     * aggiorno le statistiche
+     * 
+     **/
+    calcola_stat(output);
+
+    return output;
+
+}
+
+
+/* Aggiunge ad un ip_mat uno scalare c e lo restituisce in un nuovo tensore in output. */
+ip_mat *  ip_mat_add_scalar(ip_mat *a, float c){
+        unsigned int i,j,l;
+
+    ip_mat* output;
+
+    output=ip_mat_create(a->h,a->w,a->k,c);
+    
+    for(l=0;l<output->k;l++){
+        
+        for(i=0;i<output->h;i++){
+
+            for(j=0;j<output->w;j++)
+            {
+                output->data[l][i][j]= output->data[l][i][j] + a->data[l][i][j]; 
+            }
+        }
+
+    }
+
+    /**
+     * aggiorno le statistiche
+     * 
+     **/
+    calcola_stat(output);
+
+    return output;
+}
+
 
 
 
@@ -171,8 +332,6 @@ void ip_mat_show(ip_mat * t){
 
 void ip_mat_show_stats(ip_mat * t){
     unsigned int k;
-
-    compute_stats(t);
 
     for(k=0;k<t->k;k++){
         printf("Channel %d:\n", k);
@@ -223,18 +382,57 @@ Bitmap * ip_mat_to_bitmap(ip_mat * t){
     return b;
 }
 
+/**
+ * Cambiata la funzione get_val: la nostra matrice a indici frastagliati ha l'ordine:
+ *      Canale  ->    Colonne   ->  Righe
+ * si è modificato solamente l'ordine delle dimensioni
+ * 
+ * */
+
+
 float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k){
-    if(i<a->h && j<a->w &&k<a->k){  /* j>=0 and k>=0 and i>=0 is non sense*/
-        return a->data[i][j][k];
+    if(k<a->k && i<a->h && j<a->w){  
+        return a->data[k][i]][j];
     }else{
         printf("Errore get_val!!!");
         exit(1);
     }
 }
 
+
+
+
+/**
+float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k){
+    if(i<a->h && j<a->w &&k<a->k){  /* j>=0 and k>=0 and i>=0 is non sense*
+        return a->data[i][j][k];
+    }else{
+        printf("Errore get_val!!!");
+        exit(1);
+    }
+}
+**/
+
+/**
+ * Cambiata la funzione set_val: la nostra matrice a indici frastagliati ha l'ordine:
+ *      Canale  ->    Colonne   ->  Righe
+ * si è modificato solamente l'ordine delle dimensioni
+ * 
+ * */
+
+/**
 void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v){
     if(i<a->h && j<a->w &&k<a->k){
         a->data[i][j][k]=v;
+    }else{
+        printf("Errore set_val!!!");
+        exit(1);
+    }
+}
+*/
+void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v){
+    if(k<a->k && i<a->h && j<a->w){
+        a->data[k][i][j]=v;
     }else{
         printf("Errore set_val!!!");
         exit(1);
