@@ -11,122 +11,6 @@
  * Modifiche Lorenzo
  **/
 
-/**
- * Dato un puntatore a ip_mat e un canale ritorna il valore più piccolo della matrice presente in quel canale
- *TODO: se vuota restituiamo 0 o FLT_MIN?
- **/
-float min(ip_mat * a,unsigned int k){
-    
-    unsigned int i,j;
-    unsigned int altezza_matrice, larghezza_matrice;
-    /*minimo valore psitivo disponibile */
-    float min=FLT_MIN;
-    
-    if(a){
-
-        min =   a->data[k][0][0];
-        
-        
-        altezza_matrice =   a->h;
-        larghezza_matrice   =  a->w;
-
-        for(i=0;i<altezza_matrice;i++){
-            
-            for(j=0;j<larghezza_matrice;j++){
-                
-                if(min>a->data[k][i][j])
-                    min=a->data[k][i][j];
-            }
-        }
-    }
-
-    return min;
-    
-}
-
-/**
- * Dato un puntatore a ip_mat e un canale ritorna il valore più grande della matrice presente in quel canale
- *TODO: se vuota restituiamo 0 o FLT_max?
- **/
-
-float max(ip_mat * a,unsigned int k){
-
-    unsigned int i,j;
-    unsigned int altezza_matrice, larghezza_matrice;
-
-    float max=FLT_MAX;
-
-    if(a){
-        max=a->data[k][0][0];
-        
-        altezza_matrice =   a->h;
-        larghezza_matrice   =  a->w;
-
-        for(i=0;i<altezza_matrice;i++){
-            
-            for(j=0;j<larghezza_matrice;j++){
-                
-                if( max  <   a->data[k][i][j] )
-                    max=a->data[k][i][j];
-            }
-        }
-    }
-
-    return max;
-    
-}
-
-
-/**
- * Dato un puntatore a ip_mat e un canale ritorna il valore medio di quel canale in base al numero di elementi
- * 
- * TODO: Controllare: è giusto fare la media in quel modo?
- **/ 
-
-
-float mean(ip_mat * a,unsigned int k){
-
-    unsigned int i,j;
-    unsigned int altezza_matrice, larghezza_matrice;
-
-    int count=0;   
-    float mean=0;
-    
-    if(a){
-        altezza_matrice =   a->h;
-        larghezza_matrice   =  a->w;
-
-        for(i=0;i<altezza_matrice;i++){
-            for(j=0;j<larghezza_matrice;j++){
-
-                mean+=a->data[k][altezza_matrice][larghezza_matrice];
-                count++;
-            }
-        }
-    }
-
-    return (mean/count);
-}
-
-
-
-/**
- * Calcola stat : data una matrice ip_mat calcola e modifica le statistiche di quel canale
- * 
- **/ 
-
-void calcola_stat(ip_mat *a){
-    int l=0;
-    
-    for(l=0;l<a->k;l++){
-
-        a->stat[l].max=max(a,l);
-        a->stat[l].min=min(a,l);
-        a->stat[l].mean=mean(a,l);
-    }
-
-}
-
 
 
 /**
@@ -198,7 +82,7 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
             for(c=0;c<k;c++){
                 nuova->stat[c].max=v;
                 nuova->stat[c].min=v;
-                nuova->stat[c].mean=mean(nuova,c);
+                nuova->stat[c].mean=mean(nuova,(int )c);
             }
     }
 
@@ -238,79 +122,11 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
         }
     }
 
-    calcola_stat(t);
+    compute_stat(t);
 
 }
 
 
-
-
-/**
- * 
- *Matematiche aggiungi e moltiplica scalare
- *
- **/
-
-/* Moltiplica un ip_mat per uno scalare c. Si moltiplica c per tutti gli elementi di "a"
- * e si salva il risultato in un nuovo tensore in output. */
-ip_mat * ip_mat_mul_scalar(ip_mat *a, float c){
-    unsigned int i,j,l;
-
-    ip_mat* output;
-
-    output=ip_mat_create(a->h,a->w,a->k,c);
-    
-    for(l=0;l<output->k;l++){
-        
-        for(i=0;i<output->h;i++){
-
-            for(j=0;j<output->w;j++)
-            {
-                output->data[l][i][j]= output->data[l][i][j] * a->data[l][i][j]; 
-            }
-        }
-
-    }
-
-    /**
-     * aggiorno le statistiche
-     * 
-     **/
-    calcola_stat(output);
-
-    return output;
-
-}
-
-
-/* Aggiunge ad un ip_mat uno scalare c e lo restituisce in un nuovo tensore in output. */
-ip_mat *  ip_mat_add_scalar(ip_mat *a, float c){
-        unsigned int i,j,l;
-
-    ip_mat* output;
-
-    output=ip_mat_create(a->h,a->w,a->k,c);
-    
-    for(l=0;l<output->k;l++){
-        
-        for(i=0;i<output->h;i++){
-
-            for(j=0;j<output->w;j++)
-            {
-                output->data[l][i][j]= output->data[l][i][j] + a->data[l][i][j]; 
-            }
-        }
-
-    }
-
-    /**
-     * aggiorno le statistiche
-     * 
-     **/
-    calcola_stat(output);
-
-    return output;
-}
 
 
 
