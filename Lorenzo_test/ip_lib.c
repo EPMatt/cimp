@@ -184,7 +184,7 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
             for(c=0;c<k;c++){
                 for(i=0;i<h;i++){
                     for(j=0;j<w;j++){
-                        nuova-> data[k][i][j]    =   v;
+                        nuova-> data[c][i][j]    =   v;
                     }
                 }
             }
