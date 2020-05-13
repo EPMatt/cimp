@@ -92,9 +92,10 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
 }
 
 
+float easy_random(float mean,float var){
 
-float random(float mean,float var){
-    return 1.0;
+    return (mean + var*get_normal_random());
+
 }
 
 /**
@@ -105,11 +106,11 @@ float random(float mean,float var){
  * */
 
 void ip_mat_init_random(ip_mat * t, float mean, float var){
-    int i,j,l;
+     unsigned int i,j,l;
 
     /**
      * 
-     * riempio la matrice del canale i-esimo con valori casuali
+     * riempio la matrice del canale l-esimo con valori casuali
      *
      * */
 
@@ -117,7 +118,7 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
         for(i=0;i<t->h;i++){
             for(j=0;j<t->w;j++){
 
-                t->data[l][i][j] = random(mean,var); 
+                t->data[l][i][j] =easy_random(mean,var); 
             }
         }
     }
@@ -125,10 +126,6 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
     compute_stat(t);
 
 }
-
-
-
-
 
 
 void ip_mat_show(ip_mat * t){
