@@ -1,7 +1,0 @@
-#Parte 1:
- 
- fatto:
-    funzioni Supporto per la struttura ip_mat, precisamente: massimo, minimo e media.
-    funzione Create
- 
- TODO: eliminare warring di inizializzazione in  create
