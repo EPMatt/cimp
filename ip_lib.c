@@ -362,9 +362,9 @@ ip_mat * bitmap_to_ip_mat(Bitmap * img){
 
     ip_mat * out = ip_mat_create(h, w,3,0);
 
-    for (i = 0; i < h; i++)               rows 
+    for (i = 0; i < h; i++)               
     {
-        for (j = 0; j < w; j++)           columns 
+        for (j = 0; j < w; j++)           
         {
             bm_get_pixel(img, j,i,&R, &G, &B);
             set_val(out,0,i,j,(float) R);
