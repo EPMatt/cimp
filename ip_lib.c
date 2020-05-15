@@ -347,6 +347,11 @@ void ip_mat_show_stats(ip_mat * t){
     }
 }
 
+
+/**
+ * conversione da bitmap a ip_mat con parametri scambiati, la nostra matrice ha ordine
+ * Campo -> altezza -> larghezza
+ **/
 ip_mat * bitmap_to_ip_mat(Bitmap * img){
     unsigned int i=0,j=0;
 
@@ -357,9 +362,34 @@ ip_mat * bitmap_to_ip_mat(Bitmap * img){
 
     ip_mat * out = ip_mat_create(h, w,3,0);
 
-    for (i = 0; i < h; i++)              /* rows */
+    for (i = 0; i < h; i++)               rows 
     {
-        for (j = 0; j < w; j++)          /* columns */
+        for (j = 0; j < w; j++)           columns 
+        {
+            bm_get_pixel(img, j,i,&R, &G, &B);
+            set_val(out,0,i,j,(float) R);
+            set_val(out,1,i,j,(float) G);
+            set_val(out,2,i,j,(float) B);
+        }
+    }
+
+    return out;
+}
+
+/**funzione originale
+ip_mat * bitmap_to_ip_mat(Bitmap * img){
+    unsigned int i=0,j=0;
+
+    unsigned char R,G,B;
+
+    unsigned int h = img->h;
+    unsigned int w = img->w;
+
+    ip_mat * out = ip_mat_create(h, w,3,0);
+
+    for (i = 0; i < h; i++)              /* rows 
+    {
+        for (j = 0; j < w; j++)          /* columns 
         {
             bm_get_pixel(img, j,i,&R, &G, &B);
             set_val(out,i,j,0,(float) R);
@@ -370,15 +400,40 @@ ip_mat * bitmap_to_ip_mat(Bitmap * img){
 
     return out;
 }
+ */
+
+
+/**
+ * conversione da ip_mat a bitmap con parametri scambiati, la nostra matrice ha ordine
+ * Campo -> altezza -> larghezza
+ **/
 
 Bitmap * ip_mat_to_bitmap(ip_mat * t){
 
     Bitmap *b = bm_create(t->w,t->h);
 
     unsigned int i, j;
-    for (i = 0; i < t->h; i++)              /* rows */
+    for (i = 0; i < t->h; i++)              
     {
-        for (j = 0; j < t->w; j++)          /* columns */
+        for (j = 0; j < t->w; j++)          
+        {
+            bm_set_pixel(b, j,i, (unsigned char) get_val(t,0,i,j),
+                    (unsigned char) get_val(t,1,i,j),
+                    (unsigned char) get_val(t,2,i,j));
+        }
+    }
+    return b;
+}
+
+/*Funzione originale
+Bitmap * ip_mat_to_bitmap(ip_mat * t){
+
+    Bitmap *b = bm_create(t->w,t->h);
+
+    unsigned int i, j;
+    for (i = 0; i < t->h; i++)              
+    {
+        for (j = 0; j < t->w; j++)          
         {
             bm_set_pixel(b, j,i, (unsigned char) get_val(t,i,j,0),
                     (unsigned char) get_val(t,i,j,1),
@@ -387,7 +442,7 @@ Bitmap * ip_mat_to_bitmap(ip_mat * t){
     }
     return b;
 }
-
+*/
 /**
  * Cambiata la funzione get_val: la nostra matrice a indici frastagliati ha l'ordine:
  *      Canale  ->    Colonne   ->  Righe
