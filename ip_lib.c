@@ -528,9 +528,6 @@ ip_mat *ip_mat_copy(ip_mat *in)
     if (new_ip_mat)
     {
         /* copia i dati dalla vecchia alla nuova struttura */
-        new_ip_mat->k = in->k;
-        new_ip_mat->h = in->h;
-        new_ip_mat->w = in->w;
         /* deep copy stats e data */
         unsigned int ch, row, col;
         for (ch = 0; ch < in->k; ch++)
