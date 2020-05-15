@@ -447,31 +447,6 @@ ip_mat *bitmap_to_ip_mat(Bitmap *img)
         for (j = 0; j < w; j++)
         {
             bm_get_pixel(img, j, i, &R, &G, &B);
-            set_val(out, 0, i, j, (float)R);
-            set_val(out, 1, i, j, (float)G);
-            set_val(out, 2, i, j, (float)B);
-        }
-    }
-
-    return out;
-}
-
-/**funzione originale
-ip_mat * bitmap_to_ip_mat(Bitmap * img){
-    unsigned int i=0,j=0;
-
-    unsigned char R, G, B;
-
-    unsigned int h = img->h;
-    unsigned int w = img->w;
-
-    ip_mat *out = ip_mat_create(h, w, 3, 0);
-
-    for (i = 0; i < h; i++)              /* rows 
-    {
-        for (j = 0; j < w; j++)          /* columns 
-        {
-            bm_get_pixel(img, j, i, &R, &G, &B);
             set_val(out, i, j, 0, (float)R);
             set_val(out, i, j, 1, (float)G);
             set_val(out, i, j, 2, (float)B);
@@ -480,7 +455,7 @@ ip_mat * bitmap_to_ip_mat(Bitmap * img){
 
     return out;
 }
- */
+
 
 /**
  * conversione da ip_mat a bitmap con parametri scambiati, la nostra matrice ha ordine
@@ -497,24 +472,6 @@ Bitmap *ip_mat_to_bitmap(ip_mat *t)
     {
         for (j = 0; j < t->w; j++)
         {
-            bm_set_pixel(b, j, i, (unsigned char)get_val(t, 0, i, j),
-                         (unsigned char)get_val(t, 1, i, j),
-                         (unsigned char)get_val(t, 2, i, j));
-        }
-    }
-    return b;
-}
-
-/*Funzione originale
-Bitmap * ip_mat_to_bitmap(ip_mat * t){
-
-    Bitmap *b = bm_create(t->w, t->h);
-
-    unsigned int i, j;
-    for (i = 0; i < t->h; i++)              
-    {
-        for (j = 0; j < t->w; j++)          
-        {
             bm_set_pixel(b, j, i, (unsigned char)get_val(t, i, j, 0),
                          (unsigned char)get_val(t, i, j, 1),
                          (unsigned char)get_val(t, i, j, 2));
@@ -522,7 +479,7 @@ Bitmap * ip_mat_to_bitmap(ip_mat * t){
     }
     return b;
 }
-*/
+
 /**
  * Cambiata la funzione get_val: la nostra matrice a indici frastagliati ha l'ordine:
  *      Canale  ->    Colonne   ->  Righe
@@ -543,16 +500,6 @@ float get_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k)
     }
 }
 
-/**
-float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k){
-    if(i<a->h && j<a->w &&k<a->k){  /* j>=0 and k>=0 and i>=0 is non sense*
-        return a->data[i][j][k];
-    }else{
-        printf("Errore get_val!!!");
-        exit(1);
-    }
-}
-**/
 
 /**
  * Cambiata la funzione set_val: la nostra matrice a indici frastagliati ha l'ordine:
@@ -561,16 +508,6 @@ float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k){
  * 
  * */
 
-/**
-void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v){
-    if(i<a->h && j<a->w &&k<a->k){
-        a->data[i][j][k]=v;
-    }else{
-        printf("Errore set_val!!!");
-        exit(1);
-    }
-}
-*/
 void set_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k, float v)
 {
     if (k < a->k && i < a->h && j < a->w)
