@@ -443,7 +443,7 @@ float get_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k)
 {
     if (k < a->k && i < a->h && j < a->w)
     {
-        return a->data[k][i]][j];
+        return a->data[k][i][j];
     }
     else
     {
