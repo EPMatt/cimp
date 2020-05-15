@@ -548,5 +548,6 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
                 for (col = col_start; col < col_end; col++)
                     subset_mat->data[ch][row][col] = t->data[ch][row][col];
         }
-        return subset_mat;
     }
+    return subset_mat;
+}
