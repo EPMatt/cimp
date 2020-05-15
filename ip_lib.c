@@ -6,6 +6,44 @@
 #include "ip_lib.h"
 #include "bmp.h"
 
+/* HELPERS */
+/* le funzioni definite in questa sezione non sono pensate per essere esportate nella libreria, ma sono definite solamente per uso interno */
+
+/* tipo canale: matrice di float */
+typedef float **channel_t;
+/*
+ * posiziona il contenuto del canale source nel canale dest, posizionando la cella 0,0 del canale source alla posizione row,col del canale dest
+ * copia il contenuto di source fino a raggiungere il limite del canale dest, e soltanto se row,col sono indici validi per il canale dest
+ */
+void channel_puts(channel_t dest, unsigned int dest_w, unsigned int dest_h, const channel_t source, unsigned int source_w, unsigned int source_h, unsigned int row, unsigned int col)
+{
+    if (row < dest_h && col < dest_w)
+    {
+        int r, c;
+        for (r = 0; r < source_h && r + row < dest_h; r++)
+            for (c = 0; c < source_w && c + col < dest_w; c++)
+                dest[row + r][col + c] = source[r][c];
+    }
+}
+
+/*
+ * posiziona il contenuto della matrice source nella matrice dest, partendo dalla posizione specificata
+ * per tutti i canali di source (massimo il numero di canali di dest) posiziona la cella 0,0 del canale di source alla posizione row,col del canale di dest
+ * copia il contenuto di source fino a raggiungere il limite del canale di dest, e soltanto se row,col sono indici validi per la matrice dest
+ */
+void ip_mat_puts(ip_mat *dest, const ip_mat *source, unsigned int row, unsigned int col)
+{
+    if (row < dest->h && col < dest->w)
+    {
+        /* ripeti per tutti i canali di source (massimo dest->k) */
+        unsigned int k;
+        for (k = 0; k < dest->k && k < source->k; k++)
+            channel_puts(dest->data[k], dest->h, dest->w, source->data[k], source->h, source->w, row, col);
+    }
+};
+
+/* END HELPERS */
+
 /*PARTE 1: OPERAZIONI MATEMATICHE FRA IP_MAT */
 
 /*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
@@ -550,4 +588,77 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
         }
     }
     return subset_mat;
+}
+
+/* Concatena due ip_mat su una certa dimensione.
+ * Ad esempio:
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 0);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h + b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 1);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w + b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 2);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k + b.k
+ * */
+ip_mat *ip_mat_concat(ip_mat *a, ip_mat *b, int dimensione)
+{
+    ip_mat *concat_mat = NULL;
+    switch (dimensione)
+    {
+    case 0:
+        /* altezza */
+        if (a->w == b->w && a->k == b->k)
+        {
+            concat_mat = ip_mat_create(a->h + b->h, a->w, a->k, 0.0);
+            if (concat_mat)
+            {
+                ip_mat_puts(concat_mat, a, 0, 0);
+                ip_mat_puts(concat_mat, b, a->h, 0);
+            }
+        }
+        break;
+    case 1:
+        /* larghezza */
+        if (a->h == b->h && a->k == b->k)
+        {
+            concat_mat = ip_mat_create(a->h, a->w + b->w, a->k, 0.0);
+            if (concat_mat)
+            {
+                ip_mat_puts(concat_mat, a, 0, 0);
+                ip_mat_puts(concat_mat, b, 0, a->w);
+            }
+        }
+        break;
+    case 2:
+        /* canale */
+        if (a->w == b->w && a->h == b->h)
+        {
+            concat_mat = ip_mat_create(a->h, a->w, a->k + b->k, 0.0);
+            if (concat_mat)
+            {
+                /* posiziona i canali di a */
+                ip_mat_puts(concat_mat, a, 0, 0);
+                /* sposta temporaneamente in avanti il puntatore dei canali al canale k, per permettere di caricare i canali di b */
+                concat_mat->data+=a->k;
+                /* posiziona i canali di b */
+                ip_mat_puts(concat_mat, b, 0, 0);
+                /* riporta il puntatore dei canali al canale 0 */
+                concat_mat->data-=a->k;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+    return concat_mat;
 }
