@@ -520,3 +520,28 @@ void ip_mat_free(ip_mat *a)
     /* libera la struttura */
     free(a);
 }
+
+/* Crea una copia di una ip_mat e lo restituisce in output */
+ip_mat *ip_mat_copy(ip_mat *in)
+{
+    ip_mat *new_ip_mat = ip_mat_create(in->h, in->w, in->k, 0.0);
+    if (new_ip_mat)
+    {
+        /* copia i dati dalla vecchia alla nuova struttura */
+        new_ip_mat->k = in->k;
+        new_ip_mat->h = in->h;
+        new_ip_mat->w = in->w;
+        /* deep copy stats e data */
+        unsigned int ch, row, col;
+        for (ch = 0; ch < in->k; ch++)
+        {
+            /* copia gli stats per il canale */
+            new_ip_mat->stat[ch] = in->stat[ch];
+            /* copia i dati per il canale */
+            for (row = 0; row < in->h; row++)
+                for (col = 0; col < in->w; col++)
+                    new_ip_mat->data[ch][row][col] = in->data[ch][row][col];
+        }
+    }
+    return new_ip_mat;
+}
