@@ -524,21 +524,29 @@ void ip_mat_free(ip_mat *a)
 /* Crea una copia di una ip_mat e lo restituisce in output */
 ip_mat *ip_mat_copy(ip_mat *in)
 {
-    ip_mat *new_ip_mat = ip_mat_create(in->h, in->w, in->k, 0.0);
-    if (new_ip_mat)
+    return ip_mat_subset(in, 0, in->h, 0, in->w);
+}
+
+/* Restituisce una sotto-matrice, ovvero la porzione individuata da:
+ * t->data[row_start...row_end][col_start...col_end][0...k]
+ * La terza dimensione la riportiamo per intero, stiamo in sostanza prendendo un sottoinsieme
+ * delle righe e delle colonne.
+ * */
+ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end)
+{
+    ip_mat *subset_mat = NULL;
+    if (row_start <= row_end && col_start <= col_end && row_end <= t->h && col_end <= t->w)
     {
-        /* copia i dati dalla vecchia alla nuova struttura */
-        /* deep copy stats e data */
+        subset_mat = ip_mat_create(row_end - row_start, col_end - col_start, t->k, 0.0);
         unsigned int ch, row, col;
-        for (ch = 0; ch < in->k; ch++)
+        for (ch = 0; ch < t->k; ch++)
         {
             /* copia gli stats per il canale */
-            new_ip_mat->stat[ch] = in->stat[ch];
+            subset_mat->stat[ch] = t->stat[ch];
             /* copia i dati per il canale */
-            for (row = 0; row < in->h; row++)
-                for (col = 0; col < in->w; col++)
-                    new_ip_mat->data[ch][row][col] = in->data[ch][row][col];
+            for (row = row_start; row < row_end; row++)
+                for (col = col_start; col < col_end; col++)
+                    subset_mat->data[ch][row][col] = t->data[ch][row][col];
         }
+        return subset_mat;
     }
-    return new_ip_mat;
-}
