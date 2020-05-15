@@ -499,3 +499,24 @@ float get_normal_random()
     float y2 = ((float)(rand()) + 1.) / ((float)(RAND_MAX) + 1.);
     return cos(2 * PI * y2) * sqrt(-2. * log(y1));
 }
+
+/* Libera la memoria (data, stat e la struttura) */
+void ip_mat_free(ip_mat *a)
+{
+    unsigned int ch, row, col;
+    /* libera stats */
+    free(a->stat);
+    /* libera canali della matrice data */
+    for (ch = 0; ch < a->k; ch++)
+    {
+        /* libera ogni riga del canale: array di colonne */
+        for (row = 0; row < a->h; row++)
+            free(a->data[ch][row]);
+        /* libera il canale: array di righe */
+        free(a->data[ch]);
+    }
+    /* libera data */
+    free(a->data);
+    /* libera la struttura */
+    free(a);
+}
