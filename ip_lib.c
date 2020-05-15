@@ -15,14 +15,15 @@ typedef float **channel_t;
  * posiziona il contenuto del canale source nel canale dest, posizionando la cella 0,0 del canale source alla posizione row,col del canale dest
  * copia il contenuto di source fino a raggiungere il limite del canale dest, e soltanto se row,col sono indici validi per il canale dest
  */
-void channel_puts(channel_t dest, unsigned int dest_w, unsigned int dest_h, const channel_t source, unsigned int source_w, unsigned int source_h, unsigned int row, unsigned int col)
+void channel_puts(channel_t dest, unsigned int dest_h, unsigned int dest_w, const channel_t source, unsigned int source_h, unsigned int source_w, unsigned int row, unsigned int col)
 {
     if (row < dest_h && col < dest_w)
     {
         unsigned int r, c;
         for (r = 0; r < source_h && r + row < dest_h; r++)
-            for (c = 0; c < source_w && c + col < dest_w; c++)
+            for (c = 0; c < source_w && c + col < dest_w; c++){
                 dest[row + r][col + c] = source[r][c];
+            }
     }
 }
 
@@ -46,7 +47,6 @@ float easy_random(float mean, float var)
 {
     return (mean + var * get_normal_random());
 }
-
 
 /*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
 float min(ip_mat *a, int k)
@@ -121,7 +121,6 @@ float mean(ip_mat *a, int k)
     else
         return 0;
 }
-
 
 /* END HELPERS */
 
@@ -209,22 +208,25 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
 /* Libera la memoria (data, stat e la struttura) */
 void ip_mat_free(ip_mat *a)
 {
-    unsigned int ch, row;
-    /* libera stats */
-    free(a->stat);
-    /* libera canali della matrice data */
-    for (ch = 0; ch < a->k; ch++)
+    if (a != NULL)
     {
-        /* libera ogni riga del canale: array di colonne */
-        for (row = 0; row < a->h; row++)
-            free(a->data[ch][row]);
-        /* libera il canale: array di righe */
-        free(a->data[ch]);
+        unsigned int ch, row;
+        /* libera stats */
+        free(a->stat);
+        /* libera canali della matrice data */
+        for (ch = 0; ch < a->k; ch++)
+        {
+            /* libera ogni riga del canale: array di colonne */
+            for (row = 0; row < a->h; row++)
+                free(a->data[ch][row]);
+            /* libera il canale: array di righe */
+            free(a->data[ch]);
+        }
+        /* libera data */
+        free(a->data);
+        /* libera la struttura */
+        free(a);
     }
-    /* libera data */
-    free(a->data);
-    /* libera la struttura */
-    free(a);
 }
 
 /**
@@ -508,17 +510,17 @@ ip_mat *ip_mat_mul_scalar(ip_mat *a, float c)
 /* Aggiunge ad un ip_mat uno scalare c e lo restituisce in un nuovo tensore in output. */
 ip_mat *ip_mat_add_scalar(ip_mat *a, float c)
 {
-    unsigned int i, j, z;
+    unsigned int ch, row, col;
     ip_mat *out;
     out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D*/
-    for (i = 0; i < a->k; i++)
+    for (ch = 0; ch < a->k; ch++)
     {
-        for (j = 0; j < a->h; j++)
+        for (row = 0; row < a->h; row++)
         {
-            for (z = 0; i < a->w; z++)
+            for (col = 0; col < a->w; col++)
             {
 
-                out->data[i][j][z] = a->data[i][j][z] + c;
+                out->data[ch][row][col] = a->data[ch][row][col] + c;
             }
         }
     }
@@ -578,7 +580,7 @@ ip_mat *ip_mat_blend(ip_mat *a, ip_mat *b, float alpha)
  * aggiunge ad ogni pixel un certo valore*/
 ip_mat *ip_mat_brighten(ip_mat *a, float bright)
 {
-    return NULL;
+    return ip_mat_add_scalar(a, bright);
 }
 
 /* Operazione di corruzione con rumore gaussiano:
