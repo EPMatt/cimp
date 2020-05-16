@@ -7,7 +7,13 @@
 #include "bmp.h"
 
 /* HELPERS */
-/* le funzioni definite in questa sezione non sono pensate per essere esportate nella libreria, ma sono definite solamente per uso interno */
+/* le funzioni, tipi e costanti definite in questa sezione non sono pensate per essere esportate nella libreria, ma sono definite solamente per uso interno */
+
+/* valori massimi e minimi, in virgola mobile e interi, che un pixel può assumere */
+#define MAX_PIXEL_FLOAT 255.0
+#define MAX_PIXEL_INT 255
+#define MIN_PIXEL_FLOAT 0.0
+#define MIN_PIXEL_INT 0
 
 /* tipo canale: matrice di float */
 typedef float **channel_t;
@@ -21,9 +27,8 @@ void channel_puts(channel_t dest, unsigned int dest_h, unsigned int dest_w, cons
     {
         unsigned int r, c;
         for (r = 0; r < source_h && r + row < dest_h; r++)
-            for (c = 0; c < source_w && c + col < dest_w; c++){
+            for (c = 0; c < source_w && c + col < dest_w; c++)
                 dest[row + r][col + c] = source[r][c];
-            }
     }
 }
 
@@ -120,6 +125,18 @@ float mean(ip_mat *a, int k)
     }
     else
         return 0;
+}
+
+/* ottieni il valore del pixel della matrice 3D, indirizzato dagli indici forniti, ristretto all'intervallo di valori ammesso per un pixel */
+unsigned char get_restricted_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k)
+{
+    float val = get_val(a, i, j, k);
+    if (val < MIN_PIXEL_FLOAT)
+        return MIN_PIXEL_INT;
+    else if (val > MAX_PIXEL_FLOAT)
+        return MAX_PIXEL_INT;
+    else
+        return (unsigned char)val;
 }
 
 /* END HELPERS */
@@ -391,7 +408,7 @@ ip_mat *ip_mat_concat(ip_mat *a, ip_mat *b, int dimensione)
 ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
 {
     if (a->h == b->h && a->w == b->w && a->k == b->k)
-    { 
+    {
         /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
         unsigned int i, j, z;
         ip_mat *out;
@@ -418,7 +435,7 @@ ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
 ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
 {
     if (a->h == b->h && a->w == b->w && a->k == b->k)
-    { 
+    {
         /* faccio la verifica per vedere se sono uguali le dimensioni delle due matrici a 3 dimensioni */
         unsigned int i, j, z;
         ip_mat *out;
@@ -480,7 +497,7 @@ ip_mat *ip_mat_add_scalar(ip_mat *a, float c)
 ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
 {
     if (a->h == b->h && a->w == b->w && a->k == b->k)
-    { 
+    {
         /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
         unsigned int i, j, z;
         ip_mat *out;
@@ -657,9 +674,9 @@ Bitmap *ip_mat_to_bitmap(ip_mat *t)
     {
         for (j = 0; j < t->w; j++)
         {
-            bm_set_pixel(b, j, i, (unsigned char)get_val(t, i, j, 0),
-                         (unsigned char)get_val(t, i, j, 1),
-                         (unsigned char)get_val(t, i, j, 2));
+            bm_set_pixel(b, j, i, get_restricted_val(t, i, j, 0),
+                         get_restricted_val(t, i, j, 1),
+                         get_restricted_val(t, i, j, 2));
         }
     }
     return b;
