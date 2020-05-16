@@ -14,7 +14,7 @@ typedef float **channel_t;
 /*
  * posiziona il contenuto del canale source nel canale dest, posizionando la cella 0,0 del canale source alla posizione row,col del canale dest
  * copia il contenuto di source fino a raggiungere il limite del canale dest, e soltanto se row,col sono indici validi per il canale dest
- */
+ * */
 void channel_puts(channel_t dest, unsigned int dest_h, unsigned int dest_w, const channel_t source, unsigned int source_h, unsigned int source_w, unsigned int row, unsigned int col)
 {
     if (row < dest_h && col < dest_w)
@@ -31,7 +31,7 @@ void channel_puts(channel_t dest, unsigned int dest_h, unsigned int dest_w, cons
  * posiziona il contenuto della matrice source nella matrice dest, partendo dalla posizione specificata
  * per tutti i canali di source (massimo il numero di canali di dest) posiziona la cella 0,0 del canale di source alla posizione row,col del canale di dest
  * copia il contenuto di source fino a raggiungere il limite del canale di dest, e soltanto se row,col sono indici validi per la matrice dest
- */
+ * */
 void ip_mat_puts(ip_mat *dest, const ip_mat *source, unsigned int row, unsigned int col)
 {
     if (row < dest->h && col < dest->w)
@@ -132,21 +132,17 @@ float mean(ip_mat *a, int k)
 ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
 {
     unsigned int i, j, c;
-
     ip_mat *nuova;
-
     nuova = (ip_mat *)malloc(sizeof(ip_mat));
     /**
-     * asseggno alla struttura nuova i valori dei campi
+     * assegno alla struttura nuova i valori dei campi
      * dell'altezza e larghezzza
      *
      **/
     nuova->h = h;
     nuova->k = k;
     nuova->w = w;
-
     /**creazione delle k matrici + inizializzazione a v**/
-
     if (nuova)
     {
         /**
@@ -154,46 +150,25 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
          * le statistiche per canale
          **/
         nuova->data = (float ***)malloc(sizeof(float **) * k);
-
         nuova->stat = (stats *)malloc(sizeof(stats) * k);
-
-        /**
-             * canale
-             **/
+        /* canale */
         for (c = 0; c < k; c++)
-        {
-
             nuova->data[c] = (float **)malloc(sizeof(float *) * h);
-        }
-
         for (c = 0; c < k; c++)
         {
-
             for (i = 0; i < h; i++)
-            {
-
                 nuova->data[c][i] = (float *)malloc(sizeof(float) * w);
-            }
         }
-
-        /*inzializzazione dei valori della matrice*/
-
+        /* inizializzazione dei valori della matrice */
         for (c = 0; c < k; c++)
         {
             for (i = 0; i < h; i++)
             {
                 for (j = 0; j < w; j++)
-                {
                     nuova->data[c][i][j] = v;
-                }
             }
         }
-
-        /**
-             * riempio i valri di stats per ogni canale;
-             * 
-             **/
-
+        /* riempio i valori di stats per ogni canale */
         for (c = 0; c < k; c++)
         {
             nuova->stat[c].max = v;
@@ -201,7 +176,6 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
             nuova->stat[c].mean = mean(nuova, (int)c);
         }
     }
-
     return nuova;
 }
 
@@ -229,13 +203,12 @@ void ip_mat_free(ip_mat *a)
     }
 }
 
-/**
+/*
  * Cambiata la funzione get_val: la nostra matrice a indici frastagliati ha l'ordine:
  *      Canale  ->    Colonne   ->  Righe
  * si è modificato solamente l'ordine delle dimensioni
  * 
  * */
-
 float get_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k)
 {
     if (k < a->k && i < a->h && j < a->w)
@@ -249,13 +222,12 @@ float get_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k)
     }
 }
 
-/**
+/*
  * Cambiata la funzione set_val: la nostra matrice a indici frastagliati ha l'ordine:
  *      Canale  ->    Colonne   ->  Righe
  * si è modificato solamente l'ordine delle dimensioni
  * 
  * */
-
 void set_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k, float v)
 {
     if (k < a->k && i < a->h && j < a->w)
@@ -278,7 +250,6 @@ void compute_stats(ip_mat *t)
     for (i = 0; i < t->k; i++)
     {
         /*per ogni canale chiamo le funzioni min, max e mean per trovare rispettivamente il minimo, massimo e la media della matrice di quel canale*/
-
         t->stat->max = max(t, i);
         t->stat->min = min(t, i);
         t->stat->mean = mean(t, i);
@@ -289,31 +260,23 @@ void compute_stats(ip_mat *t)
  * TODO: random(mean, var); 
  * Inizializza una ip_mat con dimensioni w h e k.
  * Ogni elemento è generato da una gaussiana con media mean e varianza var 
- * 
  * */
-
 void ip_mat_init_random(ip_mat *t, float mean, float var)
 {
     unsigned int i, j, l;
-
     /**
      * 
      * riempio la matrice del canale l-esimo con valori casuali
      *
      * */
-
     for (l = 0; l < t->k; l++)
     {
         for (i = 0; i < t->h; i++)
         {
             for (j = 0; j < t->w; j++)
-            {
-
                 t->data[l][i][j] = easy_random(mean, var);
-            }
         }
     }
-
     compute_stats(t);
 }
 
@@ -428,7 +391,8 @@ ip_mat *ip_mat_concat(ip_mat *a, ip_mat *b, int dimensione)
 ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
 {
     if (a->h == b->h && a->w == b->w && a->k == b->k)
-    { /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
+    { 
+        /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
         unsigned int i, j, z;
         ip_mat *out;
         /* siccome ho in input 2 matrici 3D che hanno la stessa dimensione , sommandole ottentiamo una nuova matrice 3D con le stesse dimensioni*/
@@ -438,15 +402,10 @@ ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; i < a->w; z++)
-                {
-
                     out->data[i][j][z] = a->data[i][j][z] + b->data[i][j][z];
-                }
             }
         }
-
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
-
         return out;
     }
     else /*in ramo  else mi trovo sse le due matrici 3D in input hanno dimensione diverse , in questo caso non posso sommare le due matrici a 3 dimensioni*/
@@ -459,7 +418,8 @@ ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
 ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
 {
     if (a->h == b->h && a->w == b->w && a->k == b->k)
-    { /* faccio la verifica per vedere se sono uguali le dimensioni delle due matrici a 3 dimensioni */
+    { 
+        /* faccio la verifica per vedere se sono uguali le dimensioni delle due matrici a 3 dimensioni */
         unsigned int i, j, z;
         ip_mat *out;
         /* siccome ho in input 2 matrici 3D che hanno la stessa dimensione , faccendo la sottrazione ottentiamo una nuova matrice 3D con le stesse dimensioni*/
@@ -469,15 +429,10 @@ ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; i < a->w; z++)
-                {
-
                     out->data[i][j][z] = a->data[i][j][z] - b->data[i][j][z]; /* effetuo la sottrazione */
-                }
             }
         }
-
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
-
         return out;
     }
     else /*in ramo  else mi trovo sse le due matrici 3D in input hanno dimensione diverse*/
@@ -491,18 +446,14 @@ ip_mat *ip_mat_mul_scalar(ip_mat *a, float c)
     unsigned int i, j, z;
     ip_mat *out;
     out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D, che inizialmente ha tutti i valori 0.0*/
-
     for (i = 0; i < a->k; i++)
     {
         for (j = 0; j < a->h; j++)
         {
             for (z = 0; i < a->w; z++)
-            {
                 out->data[i][j][z] = a->data[i][j][z] * c;
-            }
         }
     }
-
     compute_stats(out); /*modifico le statistiche per ogni canale*/
     return out;
 }
@@ -518,15 +469,10 @@ ip_mat *ip_mat_add_scalar(ip_mat *a, float c)
         for (row = 0; row < a->h; row++)
         {
             for (col = 0; col < a->w; col++)
-            {
-
                 out->data[ch][row][col] = a->data[ch][row][col] + c;
-            }
         }
     }
-
     compute_stats(out); /*modifico le statistiche per ogni canale*/
-
     return out;
 }
 
@@ -534,7 +480,8 @@ ip_mat *ip_mat_add_scalar(ip_mat *a, float c)
 ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
 {
     if (a->h == b->h && a->w == b->w && a->k == b->k)
-    { /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
+    { 
+        /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
         unsigned int i, j, z;
         ip_mat *out;
         /* siccome ho in input 2 matrici 3D che hanno la stessa dimensione , faccendo la media delle 2 , otteniamo una nuova matrice a 3 dimensione che ha le stesse dimensioni*/
@@ -544,15 +491,10 @@ ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; i < a->w; z++)
-                {
-
                     out->data[i][j][z] = (a->data[i][j][z] + b->data[i][j][z]) / 2;
-                }
             }
         }
-
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice a tre dimensioni*/
-
         return out;
     }
     else /*sse le ip_mat a e b non hanno le stesse dimensioni*/
