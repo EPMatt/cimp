@@ -11,9 +11,7 @@
 
 /* valori massimi e minimi, in virgola mobile e interi, che un pixel può assumere */
 #define MAX_PIXEL_FLOAT 255.0
-#define MAX_PIXEL_INT 255
 #define MIN_PIXEL_FLOAT 0.0
-#define MIN_PIXEL_INT 0
 
 /* costanti utilizzati nel richiamare la funzione ip_mat_puts */
 #define NO_COMPUTE_STATS 0
@@ -134,16 +132,15 @@ float mean(ip_mat *a, int k)
         return 0;
 }
 
-/* ottieni il valore del pixel della matrice 3D, indirizzato dagli indici forniti, ristretto all'intervallo di valori ammesso per un pixel */
-unsigned char get_restricted_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k)
+/* restringi il valore fornito all'interno del range low...high, estremi inclusi */
+float restrict_val(float val, float low, float high)
 {
-    float val = get_val(a, i, j, k);
-    if (val < MIN_PIXEL_FLOAT)
-        return MIN_PIXEL_INT;
-    else if (val > MAX_PIXEL_FLOAT)
-        return MAX_PIXEL_INT;
+    if (val < low)
+        return low;
+    else if (val > high)
+        return high;
     else
-        return (unsigned char)val;
+        return val;
 }
 
 /* END HELPERS */
@@ -644,6 +641,15 @@ void rescale(ip_mat *t, float new_max)
 /* Nell'operazione di clamping i valori <low si convertono in low e i valori >high in high.*/
 void clamp(ip_mat *t, float low, float high)
 {
+    unsigned int ch, row, col;
+    for (ch = 0; ch < t->k; ch++)
+    {
+        for (row = 0; row < t->h; row++)
+        {
+            for (col = 0; col < t->w; col++)
+                set_val(t, row, col, ch, restrict_val(get_val(t, row, col, ch), low, high));
+        }
+    }
 }
 
 /**** METODI GIA' IMPLEMENTATI ****/
@@ -696,9 +702,9 @@ Bitmap *ip_mat_to_bitmap(ip_mat *t)
     {
         for (j = 0; j < t->w; j++)
         {
-            bm_set_pixel(b, j, i, get_restricted_val(t, i, j, 0),
-                         get_restricted_val(t, i, j, 1),
-                         get_restricted_val(t, i, j, 2));
+            bm_set_pixel(b, j, i, (unsigned char)restrict_val(get_val(t, i, j, 0), MIN_PIXEL_FLOAT, MAX_PIXEL_FLOAT),
+                         (unsigned char)restrict_val(get_val(t, i, j, 1), MIN_PIXEL_FLOAT, MAX_PIXEL_FLOAT),
+                         (unsigned char)restrict_val(get_val(t, i, j, 2), MIN_PIXEL_FLOAT, MAX_PIXEL_FLOAT));
         }
     }
     return b;
