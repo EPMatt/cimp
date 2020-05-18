@@ -53,10 +53,7 @@ void ip_mat_puts(ip_mat *dest, const ip_mat *source, unsigned int row, unsigned 
     }
 }
 
-float easy_random(float mean, float var)
-{
-    return (mean + var * get_normal_random());
-}
+
 
 /*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
 float min(ip_mat *a, int k)
@@ -142,6 +139,34 @@ float restrict_val(float val, float low, float high)
     else
         return val;
 }
+
+
+/**
+ * Calcola la media per ogni pixel sui tre canali, prendendo un indice colonna e un indice riga.
+ * 
+ * */
+
+float mean_pixel_channel(ip_mat* a, unsigned int i, unsigned int j)
+{
+
+    if(a){
+        unsigned int l;
+        float sup = 0.0;
+
+        for(l=0; l<a->k; l++){
+            sup += get_val(a,i,j,l);
+        }
+
+        sup = sup/a->k;
+
+        return sup;
+
+    }
+    else
+        return 0.0;
+    
+}
+
 
 /* END HELPERS */
 
@@ -282,7 +307,7 @@ void ip_mat_init_random(ip_mat *t, float mean, float std)
         for (i = 0; i < t->h; i++)
         {
             for (j = 0; j < t->w; j++)
-                t->data[l][i][j] = easy_random(mean, var);
+                t->data[l][i][j] = get_normal_random(mean, std);
         }
     }
     compute_stats(t);
@@ -431,7 +456,7 @@ ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
         {
             for (j = 0; j < a->h; j++)
             {
-                for (z = 0; i < a->w; z++)
+                for (z = 0; z < a->w; z++)
                     out->data[i][j][z] = a->data[i][j][z] + b->data[i][j][z];
             }
         }
@@ -460,7 +485,7 @@ ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
         {
             for (j = 0; j < a->h; j++)
             {
-                for (z = 0; i < a->w; z++)
+                for (z = 0; z < a->w; z++)
                     out->data[i][j][z] = a->data[i][j][z] - b->data[i][j][z]; /* effetuo la sottrazione */
             }
         }
@@ -485,7 +510,7 @@ ip_mat *ip_mat_mul_scalar(ip_mat *a, float c)
     {
         for (j = 0; j < a->h; j++)
         {
-            for (z = 0; i < a->w; z++)
+            for (z = 0; z < a->w; z++)
                 out->data[i][j][z] = a->data[i][j][z] * c;
         }
     }
@@ -554,20 +579,57 @@ ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  * */
+
 ip_mat *ip_mat_to_gray_scale(ip_mat *in)
 {
-    return NULL;
+    if(in)
+    {
+        unsigned int i,j,l;
+        float sup;
+        ip_mat *nuova;
+
+        nuova=ip_mat_create(in->h, in->w, in->k, 0.0);
+
+        for(l=0; l<nuova->k ; l++)
+        {
+
+            for(i=0; i<nuova->h; i++)
+            {
+
+                for(j=0; j<nuova->w; j++)
+                {
+                    sup = mean_pixel_channel(in,i,j);   
+                    set_val(nuova,i,j,l,sup);
+                }
+            }
+        }
+
+        compute_stats(nuova);
+
+        return nuova;
+    }
+    else
+        return NULL;
 }
+
 
 /* Effettua la fusione (combinazione convessa) di due immagini.
  *
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
+
 ip_mat *ip_mat_blend(ip_mat *a, ip_mat *b, float alpha)
 {
-    return NULL;
+    if(a && b && alpha>=0.0 && alpha<=1.0)
+    { 
+         return ip_mat_sum(ip_mat_mul_scalar(a,alpha), ip_mat_mul_scalar(b,(1-alpha)));
+
+    }
+    else
+        return NULL;
 }
+
 
 /* Operazione di brightening: aumenta la luminosità dell'immagine
  * aggiunge ad ogni pixel un certo valore
@@ -591,7 +653,19 @@ ip_mat *ip_mat_brighten(ip_mat *a, float bright)
  * */
 ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 {
-    return NULL;
+    if(a){
+        ip_mat *b;
+        b = ip_mat_copy(a);
+        ip_mat_mul_scalar(b,amount);
+        b = ip_mat_sum(a, b);
+        
+        ip_mat_init_random(b, 0 ,0.254);
+
+        return b;
+        
+    }
+    else
+        return NULL;
 }
 
 /**** PARTE 3: CONVOLUZIONE E FILTRI *****/
