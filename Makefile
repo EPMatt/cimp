@@ -4,7 +4,8 @@ build_flags= -Wall --ansi --pedantic -lm -g3 -O3 -fsanitize=address -fsanitize=u
 
 build: main_ip_lib
 
-.PHONY: clean build
+clean:
+		rm -f test_bmp main_iplib $(objects)
 
 main_ip_lib: $(objects) ip_lib.h bmp.h 
 		gcc $(objects) $(build_flags) -o main_iplib
@@ -21,5 +22,4 @@ bmp.o:bmp.c bmp.h
 test_bmp:test_bmp.c bmp.o bmp.h
 		gcc test_bmp.c bmp.o -o test_bmp -Wall -lm
 
-clean:
-		rm -f test_bmp main_iplib $(objects)
+.PHONY: clean build
