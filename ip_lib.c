@@ -621,17 +621,15 @@ ip_mat *ip_mat_to_gray_scale(ip_mat *in)
 
 ip_mat *ip_mat_blend(ip_mat *a, ip_mat *b, float alpha)
 {
-    if(a && b && a->h == b->h && a->w == b->w && a->k && b->k && alpha>=0.0 && alpha<=1.0)
+    if(a && b && a->h == b->h && a->w == b->w && a->k == b->k && alpha>=0.0 && alpha<=1.0)
     { 
-        ip_mat *sup,*sup1, *final;
-        sup  = ip_mat_mul_scalar(a,alpha);
-        sup1 = ip_mat_mul_scalar(b,1-alpha);
-        final= ip_mat_sum(sup1,sup);
-        free(sup1);
-        free(sup);
-
+        ip_mat *to_blend_a,*to_blend_b, *final;
+        to_blend_a  = ip_mat_mul_scalar(a,alpha);
+        to_blend_b = ip_mat_mul_scalar(b,1-alpha);
+        final= ip_mat_sum(to_blend_a,to_blend_b);
+        ip_mat_free(to_blend_a);
+        ip_mat_free(to_blend_b);
         return final; 
-         
     }
     else
         return NULL;
