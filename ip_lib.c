@@ -692,10 +692,8 @@ ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w)
     {
         ip_mat *out = ip_mat_create(a->h + 2 * pad_h, a->w + 2 * pad_w, a->k, 0.0);
         if (out)
-        {
             ip_mat_puts(out, a, pad_h, pad_w, COMPUTE_STATS);
-            return out;
-        }
+        return out;
     }
     else
         return NULL;
@@ -704,25 +702,53 @@ ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w)
 /* Crea un filtro di sharpening */
 ip_mat *create_sharpen_filter()
 {
-    return NULL;
+    /* crea un filtro di sharpening semplice, a un canale */
+    ip_mat *out = ip_mat_create(3, 3, 1, 0.0);
+    if (out)
+    {
+        set_val(out, 0, 1, 0, -1.0);
+        set_val(out, 1, 0, 0, -1.0);
+        set_val(out, 1, 1, 0, 5.0);
+        set_val(out, 1, 2, 0, -1.0);
+        set_val(out, 2, 1, 0, -1.0);
+    }
+    return out;
 }
 
 /* Crea un filtro per rilevare i bordi */
 ip_mat *create_edge_filter()
 {
-    return NULL;
+    /* crea un filtro di edge semplice, a un canale */
+    ip_mat *out = ip_mat_create(3, 3, 1, -1.0);
+    if (out)
+        set_val(out, 1, 1, 0, 8.0);
+    return out;
 }
 
 /* Crea un filtro per aggiungere profondità */
 ip_mat *create_emboss_filter()
 {
-    return NULL;
+    /* crea un filtro di emboss semplice, a un canale */
+    ip_mat *out = ip_mat_create(3, 3, 1, 1.0);
+    if (out)
+    {
+        set_val(out, 0, 0, 0, -2.0);
+        set_val(out, 0, 1, 0, -1.0);
+        set_val(out, 0, 2, 0, 0.0);
+        set_val(out, 1, 0, 0, -1.0);
+        set_val(out, 2, 0, 0, 0.0);
+        set_val(out, 2, 2, 0, -2.0);
+    }
+    return out;
 }
 
 /* Crea un filtro medio per la rimozione del rumore */
 ip_mat *create_average_filter(unsigned int h, unsigned int w, unsigned int k)
 {
-    return NULL;
+    float c = 1.0 / (w * h);
+    /* crea un filtro average a k canali */
+    ip_mat *out = ip_mat_create(h, w, k, c);
+    return out;
 }
 
 /* Crea un filtro gaussiano per la rimozione del rumore */
