@@ -62,14 +62,14 @@ float min(ip_mat *a, int k)
     {
         unsigned int i, j;
         float minimo;
-        minimo = a->data[k][0][0]; /*metto come minimo il primo elemento della matrice*/
+        minimo = get_val(a,0,0,k); /*metto come minimo il primo elemento della matrice*/
 
         for (i = 0; i < a->h; i++)
         {
             for (j = 0; j < a->w; j++)
             {
-                if (minimo > a->data[k][i][j])
-                    minimo = a->data[k][i][j];
+                if (minimo > get_val(a,i,j, k))
+                    minimo = get_val(a , i, j, k);
             }
         }
         return minimo;
@@ -87,14 +87,14 @@ float max(ip_mat *a, int k)
         unsigned int i, j;
         float massimo;
         /*all'inizio metto come massimo il primo elemento della matrice e dopo vado a verificare se c'è un altro elemento maggiore*/
-        massimo = a->data[k][0][0];
+        massimo = get_val(a,0,0,k);
 
         for (i = 0; i < a->h; i++)
         {
             for (j = 0; j < a->w; j++)
             {
-                if (massimo < a->data[k][i][j])
-                    massimo = a->data[k][i][j];
+                if (massimo < get_val(a, i, j, k))
+                    massimo = get_val(a, i, j, k);
             }
         }
         return massimo;
@@ -117,7 +117,7 @@ float mean(ip_mat *a, int k)
         {
             for (j = 0; j < a->w; j++)
             {
-                somma += a->data[k][i][j];
+                somma += get_val(a, i, j, k);
                 nr_el++;
             }
         }
@@ -211,7 +211,7 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
             for (i = 0; i < h; i++)
             {
                 for (j = 0; j < w; j++)
-                    nuova->data[c][i][j] = v;
+                    set_val(nuova,i,j,c,v);
             }
         }
         /* riempio i valori di stats per ogni canale */
@@ -307,7 +307,7 @@ void ip_mat_init_random(ip_mat *t, float mean, float std)
         for (i = 0; i < t->h; i++)
         {
             for (j = 0; j < t->w; j++)
-                t->data[l][i][j] = get_normal_random(mean, std);
+                set_val(t, i, j, l, get_normal_random(mean, std));
         }
     }
     compute_stats(t);
@@ -350,7 +350,7 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
             /* copia i dati per il canale */
             for (row = row_start; row < row_end; row++)
                 for (col = col_start; col < col_end; col++)
-                    subset_mat->data[ch][row][col] = t->data[ch][row][col];
+                    set_val(subset_mat, row, col, ch, get_val(t, row, col, ch) );
         }
     }
     compute_stats(subset_mat);
@@ -457,7 +457,7 @@ ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; z < a->w; z++)
-                    out->data[i][j][z] = a->data[i][j][z] + b->data[i][j][z];
+                    set_val(out, j, z, i, (get_val(a,j, z, i) + get_val(b,j,z,i)));
             }
         }
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
@@ -486,7 +486,7 @@ ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; z < a->w; z++)
-                    out->data[i][j][z] = a->data[i][j][z] - b->data[i][j][z]; /* effetuo la sottrazione */
+                    set_val(out, j, z, i, (get_val(a, j, z, i) - get_val(b, j, z, i)));  /* effetuo la sottrazione */
             }
         }
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
@@ -511,7 +511,7 @@ ip_mat *ip_mat_mul_scalar(ip_mat *a, float c)
         for (j = 0; j < a->h; j++)
         {
             for (z = 0; z < a->w; z++)
-                out->data[i][j][z] = a->data[i][j][z] * c;
+                set_val(out, j, z, i, (get_val(a, j, z, i) * c) );
         }
     }
     compute_stats(out); /*modifico le statistiche per ogni canale*/
@@ -533,7 +533,7 @@ ip_mat *ip_mat_add_scalar(ip_mat *a, float c)
         for (row = 0; row < a->h; row++)
         {
             for (col = 0; col < a->w; col++)
-                out->data[ch][row][col] = a->data[ch][row][col] + c;
+                set_val(out, row, col, ch, (get_val(a, row, col, ch) + c) );
         }
     }
     compute_stats(out); /*modifico le statistiche per ogni canale*/
@@ -559,8 +559,8 @@ ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
         {
             for (j = 0; j < a->h; j++)
             {
-                for (z = 0; i < a->w; z++)
-                    out->data[i][j][z] = (a->data[i][j][z] + b->data[i][j][z]) / 2;
+                for (z = 0; z < a->w; z++)
+                set_val(out, j, z, i, (get_val(a, j, z, i) + get_val(b, j, z, i)) / 2 );
             }
         }
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice a tre dimensioni*/
@@ -621,10 +621,17 @@ ip_mat *ip_mat_to_gray_scale(ip_mat *in)
 
 ip_mat *ip_mat_blend(ip_mat *a, ip_mat *b, float alpha)
 {
-    if(a && b && alpha>=0.0 && alpha<=1.0)
+    if(a && b && a->h == b->h && a->w == b->w && a->k && b->k && alpha>=0.0 && alpha<=1.0)
     { 
-         return ip_mat_sum(ip_mat_mul_scalar(a,alpha), ip_mat_mul_scalar(b,(1-alpha)));
+        ip_mat *sup,*sup1, *final;
+        sup  = ip_mat_mul_scalar(a,alpha);
+        sup1 = ip_mat_mul_scalar(b,1-alpha);
+        final= ip_mat_sum(sup1,sup);
+        free(sup1);
+        free(sup);
 
+        return final; 
+         
     }
     else
         return NULL;
@@ -654,15 +661,8 @@ ip_mat *ip_mat_brighten(ip_mat *a, float bright)
 ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 {
     if(a){
-        ip_mat *b;
-        b = ip_mat_copy(a);
-        ip_mat_mul_scalar(b,amount);
-        b = ip_mat_sum(a, b);
-        
-        ip_mat_init_random(b, 0 ,0.254);
-
-        return b;
-        
+        amount= amount*2.54;
+        return ip_mat_add_scalar(a,get_normal_random(0, amount/2));
     }
     else
         return NULL;
