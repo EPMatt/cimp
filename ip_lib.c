@@ -62,14 +62,14 @@ float min(ip_mat *a, int k)
     {
         unsigned int i, j;
         float minimo;
-        minimo = get_val(a,0,0,k); /*metto come minimo il primo elemento della matrice*/
+        minimo = get_val(a, 0, 0, k); /*metto come minimo il primo elemento della matrice*/
 
         for (i = 0; i < a->h; i++)
         {
             for (j = 0; j < a->w; j++)
             {
-                if (minimo > get_val(a,i,j, k))
-                    minimo = get_val(a , i, j, k);
+                if (minimo > get_val(a, i, j, k))
+                    minimo = get_val(a, i, j, k);
             }
         }
         return minimo;
@@ -87,7 +87,7 @@ float max(ip_mat *a, int k)
         unsigned int i, j;
         float massimo;
         /*all'inizio metto come massimo il primo elemento della matrice e dopo vado a verificare se c'è un altro elemento maggiore*/
-        massimo = get_val(a,0,0,k);
+        massimo = get_val(a, 0, 0, k);
 
         for (i = 0; i < a->h; i++)
         {
@@ -154,7 +154,7 @@ float mean_pixel_channel(ip_mat* a, unsigned int i, unsigned int j)
         float sup = 0.0;
 
         for(l=0; l<a->k; l++){
-            sup += get_val(a,i,j,l);
+            sup += get_val(a, i, j, l);
         }
 
         sup = sup/a->k;
@@ -211,7 +211,7 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
             for (i = 0; i < h; i++)
             {
                 for (j = 0; j < w; j++)
-                    set_val(nuova,i,j,c,v);
+                    set_val(nuova,i, j, c, v);
             }
         }
         /* riempio i valori di stats per ogni canale */
