@@ -53,8 +53,6 @@ void ip_mat_puts(ip_mat *dest, const ip_mat *source, unsigned int row, unsigned 
     }
 }
 
-
-
 /*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
 float min(ip_mat *a, int k)
 {
@@ -140,33 +138,31 @@ float restrict_val(float val, float low, float high)
         return val;
 }
 
-
 /**
  * Calcola la media per ogni pixel sui tre canali, prendendo un indice colonna e un indice riga.
  * 
  * */
 
-float mean_pixel_channel(ip_mat* a, unsigned int i, unsigned int j)
+float mean_pixel_channel(ip_mat *a, unsigned int i, unsigned int j)
 {
 
-    if(a){
+    if (a)
+    {
         unsigned int l;
         float sup = 0.0;
 
-        for(l=0; l<a->k; l++){
+        for (l = 0; l < a->k; l++)
+        {
             sup += get_val(a, i, j, l);
         }
 
-        sup = sup/a->k;
+        sup = sup / a->k;
 
         return sup;
-
     }
     else
         return 0.0;
-    
 }
-
 
 /* END HELPERS */
 
@@ -211,7 +207,7 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
             for (i = 0; i < h; i++)
             {
                 for (j = 0; j < w; j++)
-                    set_val(nuova,i, j, c, v);
+                    set_val(nuova, i, j, c, v);
             }
         }
         /* riempio i valori di stats per ogni canale */
@@ -350,7 +346,7 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
             /* copia i dati per il canale */
             for (row = row_start; row < row_end; row++)
                 for (col = col_start; col < col_end; col++)
-                    set_val(subset_mat, row, col, ch, get_val(t, row, col, ch) );
+                    set_val(subset_mat, row, col, ch, get_val(t, row, col, ch));
         }
     }
     compute_stats(subset_mat);
@@ -457,7 +453,7 @@ ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; z < a->w; z++)
-                    set_val(out, j, z, i, (get_val(a,j, z, i) + get_val(b,j,z,i)));
+                    set_val(out, j, z, i, (get_val(a, j, z, i) + get_val(b, j, z, i)));
             }
         }
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
@@ -486,7 +482,7 @@ ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; z < a->w; z++)
-                    set_val(out, j, z, i, (get_val(a, j, z, i) - get_val(b, j, z, i)));  /* effetuo la sottrazione */
+                    set_val(out, j, z, i, (get_val(a, j, z, i) - get_val(b, j, z, i))); /* effetuo la sottrazione */
             }
         }
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
@@ -511,7 +507,7 @@ ip_mat *ip_mat_mul_scalar(ip_mat *a, float c)
         for (j = 0; j < a->h; j++)
         {
             for (z = 0; z < a->w; z++)
-                set_val(out, j, z, i, (get_val(a, j, z, i) * c) );
+                set_val(out, j, z, i, (get_val(a, j, z, i) * c));
         }
     }
     compute_stats(out); /*modifico le statistiche per ogni canale*/
@@ -533,7 +529,7 @@ ip_mat *ip_mat_add_scalar(ip_mat *a, float c)
         for (row = 0; row < a->h; row++)
         {
             for (col = 0; col < a->w; col++)
-                set_val(out, row, col, ch, (get_val(a, row, col, ch) + c) );
+                set_val(out, row, col, ch, (get_val(a, row, col, ch) + c));
         }
     }
     compute_stats(out); /*modifico le statistiche per ogni canale*/
@@ -560,7 +556,7 @@ ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
             for (j = 0; j < a->h; j++)
             {
                 for (z = 0; z < a->w; z++)
-                set_val(out, j, z, i, (get_val(a, j, z, i) + get_val(b, j, z, i)) / 2 );
+                    set_val(out, j, z, i, (get_val(a, j, z, i) + get_val(b, j, z, i)) / 2);
             }
         }
         compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice a tre dimensioni*/
@@ -582,24 +578,24 @@ ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
 
 ip_mat *ip_mat_to_gray_scale(ip_mat *in)
 {
-    if(in)
+    if (in)
     {
-        unsigned int i,j,l;
+        unsigned int i, j, l;
         float sup;
         ip_mat *nuova;
 
-        nuova=ip_mat_create(in->h, in->w, in->k, 0.0);
+        nuova = ip_mat_create(in->h, in->w, in->k, 0.0);
 
-        for(l=0; l<nuova->k ; l++)
+        for (l = 0; l < nuova->k; l++)
         {
 
-            for(i=0; i<nuova->h; i++)
+            for (i = 0; i < nuova->h; i++)
             {
 
-                for(j=0; j<nuova->w; j++)
+                for (j = 0; j < nuova->w; j++)
                 {
-                    sup = mean_pixel_channel(in,i,j);   
-                    set_val(nuova,i,j,l,sup);
+                    sup = mean_pixel_channel(in, i, j);
+                    set_val(nuova, i, j, l, sup);
                 }
             }
         }
@@ -612,7 +608,6 @@ ip_mat *ip_mat_to_gray_scale(ip_mat *in)
         return NULL;
 }
 
-
 /* Effettua la fusione (combinazione convessa) di due immagini.
  *
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
@@ -621,20 +616,19 @@ ip_mat *ip_mat_to_gray_scale(ip_mat *in)
 
 ip_mat *ip_mat_blend(ip_mat *a, ip_mat *b, float alpha)
 {
-    if(a && b && a->h == b->h && a->w == b->w && a->k == b->k && alpha>=0.0 && alpha<=1.0)
-    { 
-        ip_mat *to_blend_a,*to_blend_b, *final;
-        to_blend_a  = ip_mat_mul_scalar(a,alpha);
-        to_blend_b = ip_mat_mul_scalar(b,1-alpha);
-        final= ip_mat_sum(to_blend_a,to_blend_b);
+    if (a && b && a->h == b->h && a->w == b->w && a->k == b->k && alpha >= 0.0 && alpha <= 1.0)
+    {
+        ip_mat *to_blend_a, *to_blend_b, *final;
+        to_blend_a = ip_mat_mul_scalar(a, alpha);
+        to_blend_b = ip_mat_mul_scalar(b, 1 - alpha);
+        final = ip_mat_sum(to_blend_a, to_blend_b);
         ip_mat_free(to_blend_a);
         ip_mat_free(to_blend_b);
-        return final; 
+        return final;
     }
     else
         return NULL;
 }
-
 
 /* Operazione di brightening: aumenta la luminosità dell'immagine
  * aggiunge ad ogni pixel un certo valore
@@ -658,9 +652,10 @@ ip_mat *ip_mat_brighten(ip_mat *a, float bright)
  * */
 ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 {
-    if(a){
-        amount= amount*2.54;
-        return ip_mat_add_scalar(a,get_normal_random(0, amount/2));
+    if (a)
+    {
+        amount = amount * 2.54;
+        return ip_mat_add_scalar(a, get_normal_random(0, amount / 2));
     }
     else
         return NULL;
@@ -693,7 +688,17 @@ ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
  */
 ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w)
 {
-    return NULL;
+    if (a)
+    {
+        ip_mat *out = ip_mat_create(a->h + 2 * pad_h, a->w + 2 * pad_w, a->k, 0.0);
+        if (out)
+        {
+            ip_mat_puts(out, a, pad_h, pad_w, COMPUTE_STATS);
+            return out;
+        }
+    }
+    else
+        return NULL;
 }
 
 /* Crea un filtro di sharpening */
