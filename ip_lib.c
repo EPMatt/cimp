@@ -368,6 +368,8 @@ void ip_mat_init_random(ip_mat *t, float mean, float std)
         }
         compute_stats(t);
     }
+    else
+        exit(1);
 }
 
 /* Crea una copia di una ip_mat e lo restituisce in output */
@@ -386,6 +388,8 @@ ip_mat *ip_mat_copy(ip_mat *in)
         }
         return new_mat;
     }
+    else 
+        exit(1);
 }
 
 /* Restituisce una sotto-matrice, ovvero la porzione individuata da:
@@ -504,25 +508,32 @@ ip_mat *ip_mat_concat(ip_mat *a, ip_mat *b, int dimensione)
  * all'interno di una nuova ip_mat.
  */
 ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
-{
-    if (equal_dimension(a,b))
+{   
+    if(two_not_null_ip_mat(a,b))
     {
-        /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
-        unsigned int i, j, z;
-        ip_mat *out;
-        /* siccome ho in input 2 matrici 3D che hanno la stessa dimensione , sommandole ottentiamo una nuova matrice 3D con le stesse dimensioni*/
-        out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D*/
-        for (i = 0; i < a->k; i++)
+        if (equal_dimension(a,b))
         {
-            for (j = 0; j < a->h; j++)
+            /*faccio la verifica per vedere se sono uguali le dimensioni delle ip_mat *a e ip_mat *b */
+            unsigned int i, j, z;
+            ip_mat *out;
+            /* siccome ho in input 2 matrici 3D che hanno la stessa dimensione , sommandole ottentiamo una nuova matrice 3D con le stesse dimensioni*/
+            out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D*/
+            for (i = 0; i < a->k; i++)
             {
-                for (z = 0; z < a->w; z++)
-                    set_val(out, j, z, i, (get_val(a, j, z, i) + get_val(b, j, z, i)));
+                for (j = 0; j < a->h; j++)
+                {
+                    for (z = 0; z < a->w; z++)
+                        set_val(out, j, z, i, (get_val(a, j, z, i) + get_val(b, j, z, i)));
+                }
             }
+            compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
+            return out;
         }
-        compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
-        return out;
+        else 
+            exit(1);
     }
+    else 
+        exit(1);
 }
 
 /* Esegue la sottrazione di due ip_mat (tutte le dimensioni devono essere identiche)
@@ -531,25 +542,32 @@ ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b)
  * all'interno di una nuova ip_mat.
  */
 ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
-{
-    if (equal_dimension(a, b))
+{   
+    if(two_not_null_ip_mat(a,b))
     {
-        /* faccio la verifica per vedere se sono uguali le dimensioni delle due matrici a 3 dimensioni */
-        unsigned int i, j, z;
-        ip_mat *out;
-        /* siccome ho in input 2 matrici 3D che hanno la stessa dimensione , faccendo la sottrazione ottentiamo una nuova matrice 3D con le stesse dimensioni*/
-        out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D*/
-        for (i = 0; i < a->k; i++)
+        if (equal_dimension(a, b))
         {
-            for (j = 0; j < a->h; j++)
+            /* faccio la verifica per vedere se sono uguali le dimensioni delle due matrici a 3 dimensioni */
+            unsigned int i, j, z;
+            ip_mat *out;
+            /* siccome ho in input 2 matrici 3D che hanno la stessa dimensione , faccendo la sottrazione ottentiamo una nuova matrice 3D con le stesse dimensioni*/
+            out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D*/
+            for (i = 0; i < a->k; i++)
             {
-                for (z = 0; z < a->w; z++)
-                    set_val(out, j, z, i, (get_val(a, j, z, i) - get_val(b, j, z, i))); /* effetuo la sottrazione */
+                for (j = 0; j < a->h; j++)
+                {
+                    for (z = 0; z < a->w; z++)
+                        set_val(out, j, z, i, (get_val(a, j, z, i) - get_val(b, j, z, i))); /* effetuo la sottrazione */
+                }
             }
+            compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
+            return out;
         }
-        compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice 3D*/
-        return out;
+        else 
+            exit(1);
     }
+    else 
+        exit(1);
 }
 
 /* Moltiplica un ip_mat per uno scalare c. Si moltiplica c per tutti gli elementi di "a"
@@ -558,20 +576,25 @@ ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b)
  * all'interno di una nuova ip_mat.
  */
 ip_mat *ip_mat_mul_scalar(ip_mat *a, float c)
-{
-    unsigned int i, j, z;
-    ip_mat *out;
-    out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D, che inizialmente ha tutti i valori 0.0*/
-    for (i = 0; i < a->k; i++)
+{   
+    if(not_null_ip_mat(a))
     {
-        for (j = 0; j < a->h; j++)
+        unsigned int i, j, z;
+        ip_mat *out;
+        out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D, che inizialmente ha tutti i valori 0.0*/
+        for (i = 0; i < a->k; i++)
         {
-            for (z = 0; z < a->w; z++)
-                set_val(out, j, z, i, (get_val(a, j, z, i) * c));
+            for (j = 0; j < a->h; j++)
+            {
+                for (z = 0; z < a->w; z++)
+                    set_val(out, j, z, i, (get_val(a, j, z, i) * c));
+            }
         }
+        compute_stats(out); /*modifico le statistiche per ogni canale*/
+        return out;
     }
-    compute_stats(out); /*modifico le statistiche per ogni canale*/
-    return out;
+    else 
+        exit(1);
 }
 
 /* Aggiunge ad un ip_mat uno scalare c e lo restituisce in un nuovo tensore in output.
@@ -580,20 +603,25 @@ ip_mat *ip_mat_mul_scalar(ip_mat *a, float c)
  * all'interno di una nuova ip_mat.
  */
 ip_mat *ip_mat_add_scalar(ip_mat *a, float c)
-{
-    unsigned int ch, row, col;
-    ip_mat *out;
-    out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D*/
-    for (ch = 0; ch < a->k; ch++)
+{   
+    if(not_null_ip_mat(a))
     {
-        for (row = 0; row < a->h; row++)
+        unsigned int ch, row, col;
+        ip_mat *out;
+        out = ip_mat_create(a->h, a->w, a->k, 0.0); /*creo la nuova matrice 3D*/
+        for (ch = 0; ch < a->k; ch++)
         {
-            for (col = 0; col < a->w; col++)
-                set_val(out, row, col, ch, (get_val(a, row, col, ch) + c));
+            for (row = 0; row < a->h; row++)
+            {
+                for (col = 0; col < a->w; col++)
+                    set_val(out, row, col, ch, (get_val(a, row, col, ch) + c));
+            }
         }
+        compute_stats(out); /*modifico le statistiche per ogni canale*/
+        return out;
     }
-    compute_stats(out); /*modifico le statistiche per ogni canale*/
-    return out;
+    else
+        exit(1);
 }
 
 /* Calcola la media di due ip_mat a e b. La media si calcola per coppie delle due matrici aventi gli stessi indici
@@ -624,8 +652,11 @@ ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b)
             compute_stats(out); /*modifico le statistiche per ogni canale della nuova matrice a tre dimensioni*/
             return out;
         }
+        else 
+            exit(1);
     }
-    
+    else
+        exit(1);    
 }
 
 /**** PARTE 2: SEMPLICI OPERAZIONI SU IMMAGINI ****/
@@ -666,6 +697,8 @@ ip_mat *ip_mat_to_gray_scale(ip_mat *in)
 
         return nuova;
     }
+    else
+        exit(1);
 }
 
 /* Effettua la fusione (combinazione convessa) di due immagini.
@@ -696,7 +729,11 @@ ip_mat *ip_mat_blend(ip_mat *a, ip_mat *b, float alpha)
             }
             
         }
+        else
+            exit(1);
     }
+    else 
+        exit(1);
 }
 
 /* Operazione di brightening: aumenta la luminosità dell'immagine
@@ -709,6 +746,8 @@ ip_mat *ip_mat_brighten(ip_mat *a, float bright)
 {
     if(not_null_ip_mat(a))
         return ip_mat_add_scalar(a, bright);
+    else
+        exit(1);
 
 }
 
@@ -726,9 +765,36 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
     if (not_null_ip_mat(a))
     {
         if(amount>=MIN_PIXEL_FLOAT && amount<=MAX_PIXEL_FLOAT)
-        amount = amount * get_normal_random(0,47.975);
-        return ip_mat_add_scalar(a, amount);
+        {   
+            ip_mat* out;
+            unsigned int l,h,w;
+            
+            float sup=0.0;
+            
+            out=ip_mat_create(a->h,a->w,a->k,0.0);
+            
+            for(l=0;l<a->k;l++)
+            {
+                for(h=0;h<a->h;h++)
+                {
+                    for(w=0;w<a->w;w++)
+                    {
+                        sup = get_normal_random(0,amount/2);
+                        set_val(out,h,w,l,sup);
+                    }
+                }
+            }
+
+            return ip_mat_sum(a,out);
+        
+        }    
+        
     }
+    else
+    {
+        exit(1);
+    }
+    
 }
 
 /**** PARTE 3: CONVOLUZIONE E FILTRI *****/
@@ -765,6 +831,9 @@ ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w)
             ip_mat_puts(out, a, pad_h, pad_w, COMPUTE_STATS);
         return out;
     }
+    else
+        exit(1);
+    
 }
 
 /* Crea un filtro di sharpening */
@@ -932,6 +1001,8 @@ Bitmap *ip_mat_to_bitmap(ip_mat *t)
         }
         return b;
     }
+    else
+        exit(1);
 }
 
 /* Visualizza i dati stampando in ordine le matrici rispetto
