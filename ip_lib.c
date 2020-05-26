@@ -244,29 +244,81 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
         nuova->data = (float ***)malloc(sizeof(float **) * k);
         nuova->stat = (stats *)malloc(sizeof(stats) * k);
         /* canale */
-        for (c = 0; c < k; c++)
-            nuova->data[c] = (float **)malloc(sizeof(float *) * h);
-        for (c = 0; c < k; c++)
+
+
+        if(nuova->data)
         {
-            for (i = 0; i < h; i++)
-                nuova->data[c][i] = (float *)malloc(sizeof(float) * w);
-        }
-        /* inizializzazione dei valori della matrice */
-        for (c = 0; c < k; c++)
-        {
-            for (i = 0; i < h; i++)
+            for (c = 0; c < k; c++)
+                nuova->data[c] = (float **)malloc(sizeof(float *) * h);
+            
+            for (c = 0; c < k; c++)
             {
-                for (j = 0; j < w; j++)
-                    set_val(nuova, i, j, c, v);
+                if(nuova->data[c])
+                {
+                    for (i = 0; i < h; i++)
+                        {   if(nuova->data[c][i])
+                                nuova->data[c][i] = (float *)malloc(sizeof(float) * w);
+                            else
+                            {
+                                printf("fail: create data[c][i]\n c,i generic position");
+                                exit(1);
+                            }
+                            
+                        }
+                }
+                else
+                {
+                    printf("fail: create data[c]\n c = generic position\n");
+                    exit(1);
+                }
+                
+            }
+            
+            
+            
+            /* inizializzazione dei valori della matrice */
+            for (c = 0; c < k; c++)
+            {
+                for (i = 0; i < h; i++)
+                {   
+                    for (j = 0; j < w; j++)
+                    {
+                        if(nuova->data[c][i][j])
+                            set_val(nuova, i, j, c, v);
+                        else
+                        {
+                            printf("fail: create data[c][[i][j]\n  c,i,j = generic position\n");
+                            exit(1);
+                        }
+                        
+                    }
+                }
             }
         }
-        /* riempio i valori di stats per ogni canale */
-        for (c = 0; c < k; c++)
+        else
         {
-            nuova->stat[c].max = v;
-            nuova->stat[c].min = v;
-            nuova->stat[c].mean = v;
+            printf("fail: data create");
+            exit(1);
         }
+        
+        /* riempio i valori di stats per ogni canale */
+        
+        
+        if(nuova->stat)
+        {
+            for (c = 0; c < k; c++)
+            {
+                nuova->stat[c].max = v;
+                nuova->stat[c].min = v;
+                nuova->stat[c].mean = v;
+            }
+        }
+        else
+        {
+            printf("fail: create stat\n");
+            exit(1);
+                    }
+        
 
         return nuova;
     }
@@ -336,14 +388,20 @@ void set_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k, float v)
  * */
 void compute_stats(ip_mat *t)
 {
-    unsigned int i;
-    for (i = 0; i < t->k; i++)
+    if(not_null_ip_mat(t))
     {
-        /*per ogni canale chiamo le funzioni min, max e mean per trovare rispettivamente il minimo, massimo e la media della matrice di quel canale*/
-        t->stat->max = max(t, i);
-        t->stat->min = min(t, i);
-        t->stat->mean = mean(t, i);
+        unsigned int i;
+        for (i = 0; i < t->k; i++)
+        {
+            /*per ogni canale chiamo le funzioni min, max e mean per trovare rispettivamente il minimo, massimo e la media della matrice di quel canale*/
+            t->stat->max = max(t, i);
+            t->stat->min = min(t, i);
+            t->stat->mean = mean(t, i);
+        }
     }
+    else
+        exit(1);
+    
 }
 
 /* Inizializza una ip_mat con dimensioni w h e k.
@@ -764,30 +822,36 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 {
     if (not_null_ip_mat(a))
     {
-        if(amount>=MIN_PIXEL_FLOAT && amount<=MAX_PIXEL_FLOAT)
+        if(amount >= MIN_PIXEL_FLOAT && amount <= MAX_PIXEL_FLOAT)
         {   
             ip_mat* out;
             unsigned int l,h,w;
             
             float sup=0.0;
             
-            out=ip_mat_create(a->h,a->w,a->k,0.0);
+            out=ip_mat_create(a->h, a->w, a->k, 0.0);
             
-            for(l=0;l<a->k;l++)
+            for(l=0; l<a->k; l++)
             {
-                for(h=0;h<a->h;h++)
+                for(h=0;h<a->h; h++)
                 {
-                    for(w=0;w<a->w;w++)
+                    for(w = 0; w<a->w; w++)
                     {
-                        sup = get_normal_random(0,amount/2);
-                        set_val(out,h,w,l,sup);
+                        sup = get_normal_random(0.0, amount/2);
+                        set_val(out, h, w, l, sup);
                     }
                 }
             }
-
+            
             return ip_mat_sum(a,out);
         
-        }    
+        }
+        else
+        {
+            printf("Provide a valid amount value!\n");
+            exit(1);
+        }
+            
         
     }
     else
@@ -841,15 +905,22 @@ ip_mat *create_sharpen_filter()
 {
     /* crea un filtro di sharpening semplice, a un canale */
     ip_mat *out = ip_mat_create(3, 3, 1, 0.0);
-    if (out)
+    
+    if (not_null_ip_mat(out))
     {
         set_val(out, 0, 1, 0, -1.0);
         set_val(out, 1, 0, 0, -1.0);
         set_val(out, 1, 1, 0, 5.0);
         set_val(out, 1, 2, 0, -1.0);
         set_val(out, 2, 1, 0, -1.0);
+        
+        return out;
     }
-    return out;
+    else
+    {
+        exit(1);
+    }
+    
 }
 
 /* Crea un filtro per rilevare i bordi */
@@ -857,9 +928,14 @@ ip_mat *create_edge_filter()
 {
     /* crea un filtro di edge semplice, a un canale */
     ip_mat *out = ip_mat_create(3, 3, 1, -1.0);
-    if (out)
+    
+    if( not_null_ip_mat(out))
+    {
         set_val(out, 1, 1, 0, 8.0);
-    return out;
+        return out;
+    }
+    else
+        exit(1);
 }
 
 /* Crea un filtro per aggiungere profondità */
@@ -867,7 +943,7 @@ ip_mat *create_emboss_filter()
 {
     /* crea un filtro di emboss semplice, a un canale */
     ip_mat *out = ip_mat_create(3, 3, 1, 1.0);
-    if (out)
+    if (not_null_ip_mat(out))
     {
         set_val(out, 0, 0, 0, -2.0);
         set_val(out, 0, 1, 0, -1.0);
@@ -875,8 +951,14 @@ ip_mat *create_emboss_filter()
         set_val(out, 1, 0, 0, -1.0);
         set_val(out, 2, 0, 0, 0.0);
         set_val(out, 2, 2, 0, -2.0);
+        
+        return out;
     }
-    return out;
+    else
+    {
+        exit(1);
+    }
+    
 }
 
 /* Crea un filtro medio per la rimozione del rumore */
@@ -885,7 +967,12 @@ ip_mat *create_average_filter(unsigned int h, unsigned int w, unsigned int k)
     float c = 1.0 / (w * h);
     /* crea un filtro average a k canali */
     ip_mat *out = ip_mat_create(h, w, k, c);
-    return out;
+    if(not_null_ip_mat(out))
+    {
+        return out;
+    }
+    else
+        exit(1);
 }
 
 /* Crea un filtro gaussiano per la rimozione del rumore */
@@ -916,7 +1003,8 @@ void rescale(ip_mat *t, float new_max)
  * */
 void clamp(ip_mat *t, float low, float high)
 {
-        if(not_null_ip_mat(t)){
+        if(not_null_ip_mat(t))
+        {
             unsigned int ch, row, col;
             for (ch = 0; ch < t->k; ch++)
             {
@@ -927,6 +1015,8 @@ void clamp(ip_mat *t, float low, float high)
                 }
             }
         }
+        else
+            exit(1);
 }
 
 /**** METODI GIA' IMPLEMENTATI ****/
