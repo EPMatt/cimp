@@ -363,9 +363,9 @@ void compute_stats(ip_mat *t)
     for (i = 0; i < t->k; i++)
     {
         /*per ogni canale chiamo le funzioni min, max e mean per trovare rispettivamente il minimo, massimo e la media della matrice di quel canale*/
-        t->stat->max = max(t, i);
-        t->stat->min = min(t, i);
-        t->stat->mean = mean(t, i);
+        t->stat[i].max = max(t, i);
+        t->stat[i].min = min(t, i);
+        t->stat[i].mean = mean(t, i);
     }
 }
 
@@ -749,27 +749,27 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
     not_null_ip_mat(a);
 
     if (amount >= MIN_PIXEL_FLOAT && amount <= MAX_PIXEL_FLOAT)
-    {
+    {   
+        unsigned int l,h,w;
         ip_mat *out;
-        unsigned int l, h, w;
-
-        float sup = 0.0;
-
-        out = ip_mat_create(a->h, a->w, a->k, 0.0);
-
-        for (l = 0; l < a->k; l++)
+        ip_mat* temp=ip_mat_create(a->h, a->w, a->k, 0.0);
+        float sup=0.0;
+        
+        for(l=0; l<a->k; l++)
         {
-            for (h = 0; h < a->h; h++)
+            for(h=0;h<a->h; h++)
             {
-                for (w = 0; w < a->w; w++)
+                for(w = 0; w<a->w; w++)
                 {
-                    sup = get_normal_random(0.0, amount / 2);
-                    set_val(out, h, w, l, sup);
+                    sup = get_normal_random(0.0, amount/2);
+                    set_val(temp, h, w, l, sup);
                 }
             }
         }
+        out=ip_mat_sum(a,temp);
+        ip_mat_free(temp);
 
-        return ip_mat_sum(a, out);
+        return out;
     }
     else
     {
@@ -965,16 +965,14 @@ void rescale(ip_mat *t, float new_max)
                 for (j = 0; j < t->w; j++)
                 {
                     float val, max, min;
-                    max = t->stat->max;
-                    min = t->stat->min;
+                    mmax = t->stat[k].max;
+                    min = t->stat[k].min;
                     val = (get_val(t, i, j, k) - max) / (max - min);
                     set_val(t, i, j, k, val);
-                    compute_stats(t);
-                    t = ip_mat_mul_scalar(t, new_max);
-                    /*fare la verifica dei valori min e max, funzione non provata*/
                 }
             }
         }
+        t=ip_mat_mul_scalar(t,new_max);   
     }
 }
 
