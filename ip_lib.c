@@ -873,8 +873,7 @@ ip_mat *create_emboss_filter()
     set_val(out, 0, 2, 0, 0.0);
     set_val(out, 1, 0, 0, -1.0);
     set_val(out, 2, 0, 0, 0.0);
-    set_val(out, 2, 2, 0, -2.0);
-
+    set_val(out, 2, 2, 0, 2.0);
     return out;
 }
 
