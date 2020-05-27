@@ -737,27 +737,27 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
     not_null_ip_mat(a);
 
     if (amount >= MIN_PIXEL_FLOAT && amount <= MAX_PIXEL_FLOAT)
-    {
+    {   
+        unsigned int l,h,w;
         ip_mat *out;
-        unsigned int l, h, w;
-
-        float sup = 0.0;
-
-        out = ip_mat_create(a->h, a->w, a->k, 0.0);
-
-        for (l = 0; l < a->k; l++)
+        ip_mat* temp=ip_mat_create(a->h, a->w, a->k, 0.0);
+        float sup=0.0;
+        
+        for(l=0; l<a->k; l++)
         {
-            for (h = 0; h < a->h; h++)
+            for(h=0;h<a->h; h++)
             {
-                for (w = 0; w < a->w; w++)
+                for(w = 0; w<a->w; w++)
                 {
-                    sup = get_normal_random(0.0, amount / 2);
-                    set_val(out, h, w, l, sup);
+                    sup = get_normal_random(0.0, amount/2);
+                    set_val(temp, h, w, l, sup);
                 }
             }
         }
+        out=ip_mat_sum(a,temp);
+        ip_mat_free(temp);
 
-        return ip_mat_sum(a, out);
+        return out;
     }
     else
     {
