@@ -204,6 +204,18 @@ void two_not_null_ip_mat(ip_mat *a, ip_mat *b)
     }
 }
 
+/* calcola la somma di prodotti tra il kernel fornito e il canale fornito, partendo dalla posizione (start_h,start_w) del canale */
+float convolve_channel(channel_t ch, channel_t filter, unsigned int ch_h, unsigned int ch_w, unsigned int filter_h, unsigned int filter_w, unsigned int start_h, unsigned int start_w)
+{
+    float result = 0.0;
+    unsigned int row, col;
+    for (row = 0; row < filter_h; row++)
+        for (col = 0; col < filter_w; col++)
+            result += ch[start_h+row][start_w+col] * filter[row][col];
+    return result;
+}
+
+
 /* END HELPERS */
 
 /**** PARTE 1: TIPO DI DATI ip_mat E MEMORIA ****/
@@ -768,20 +780,6 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 
 /**** PARTE 3: CONVOLUZIONE E FILTRI *****/
 
-/*funzione aux che mi restituisce un float , il valore da mettere nella ip_map temporanea*/
-float convolve_aux(ip_mat *a, ip_mat *f)
-{
-    unsigned int i, j, k;
-    float val = 0.0;
-    if (f->k >= a->k)
-    {
-        for (k = 0; k < a->k; k++)
-            for (i = 0; i < a->h; i++)
-                for (j = 0; j < a->w; j++)
-                    val += get_val(a, i, j, k) * get_val(f, i, j, k);
-    }
-    return val;
-}
 
 /* Effettua la convoluzione di un ip_mat "a" con un ip_mat "f".
  * La funzione restituisce un ip_mat delle stesse dimensioni di "a".
@@ -791,34 +789,29 @@ float convolve_aux(ip_mat *a, ip_mat *f)
  */
 ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
 {
-    if (a && f)
+    ip_mat *padded, *out;
+    channel_t fil_ch;
+    unsigned int ch, row, col, pad_h, pad_w;
+    not_null_ip_mat(a);
+    not_null_ip_mat(f);
+    pad_h = (f->h - 1) / 2;
+    pad_w = (f->w - 1) / 2;
+    /* inizializza matrici per il calcolo della convolve */
+    padded = ip_mat_padding(a, pad_h, pad_w);
+    out = ip_mat_create(a->h, a->w, a->k, 0.0);
+    fil_ch = *(f->data);
+    for (ch = 0; ch < a->k; ch++)
     {
-        unsigned int k, rows, cols, pad_h, pad_w;
-        ip_mat *temp, *out;
-        temp = ip_mat_create(((a->h) - (f->h)), (a->w) - (f->w), a->k, 0.0); /*creazione di una ip_mat temporanea*/
-        for (k = 0; k < a->k; k++)
-        {
-            for (rows = 0; rows <= ((a->h) - (f->h)); rows++)
-            {
-                for (cols = 0; cols <= ((a->w) - (f->w)); cols++)
-                {
-                    ip_mat *sub;
-                    float val;
-                    sub = ip_mat_subset(a, rows, rows + f->h, cols, cols + f->w);
-                    val = convolve_aux(sub, f);
-                    set_val(temp, rows, cols, k, val);
-                    ip_mat_free(sub);
-                }
-            }
-        }
-        pad_h = (temp->h - 1) / 2;
-        pad_w = (temp->w - 1) / 2;
-        out = ip_mat_padding(temp, pad_h, pad_w);
-        ip_mat_free(temp);
-        return out;
+        for (row = 0; row < a->h; row++)
+            for (col = 0; col < a->w; col++)
+                set_val(out, row, col, ch, convolve_channel(padded->data[ch], fil_ch, padded->h, padded->w, f->h, f->w, row, col));
+        /* questa operazione assicura che vengano applicati i primi a->k canali del filtro all'immagine, e se il filtro non ha canali sufficienti si applica sempre l'ultimo canale del filtro disponibile */
+        if (fil_ch < *(f->data) + f->k-1)
+            fil_ch++;
     }
-    else
-        return NULL;
+    /* libera la matrice temporanea */
+    ip_mat_free(padded);
+    return out;
 }
 
 /* Aggiunge un padding all'immagine. Il padding verticale è pad_h mentre quello
