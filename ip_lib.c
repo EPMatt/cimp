@@ -972,16 +972,14 @@ void rescale(ip_mat *t, float new_max)
                 for (j = 0; j < t->w; j++)
                 {
                     float val, max, min;
-                    max = t->stat->max;
-                    min = t->stat->min;
+                    mmax = t->stat[k].max;
+                    min = t->stat[k].min;
                     val = (get_val(t, i, j, k) - max) / (max - min);
                     set_val(t, i, j, k, val);
-                    compute_stats(t);
-                    t = ip_mat_mul_scalar(t, new_max);
-                    /*fare la verifica dei valori min e max, funzione non provata*/
                 }
             }
         }
+        t=ip_mat_mul_scalar(t,new_max);   
     }
 }
 
