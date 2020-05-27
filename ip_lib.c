@@ -212,8 +212,6 @@ int two_not_null_ip_mat(ip_mat* a, ip_mat* b)
     
 }
 
-
-
 /* END HELPERS */
 
 /**** PARTE 1: TIPO DI DATI ip_mat E MEMORIA ****/
@@ -276,7 +274,6 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
                     printf("Fail: Creatiion nuova->data[c][i]\n c,i generic position\n");
                     exit(1);
                 }
-                
             }
         }
         /* riempio i valori di stats per ogni canale */
@@ -822,8 +819,6 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
             printf("Provide a valid amount value!\n");
             exit(1);
         }
-            
-        
     }
     else
     {
@@ -834,6 +829,19 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 
 /**** PARTE 3: CONVOLUZIONE E FILTRI *****/
 
+/*funzione aux che mi restituisce un float , il valore da mettere nella ip_map temporanea*/
+float convolve_aux(ip_mat *a, ip_mat *f){
+    unsigned int i,j,k;
+    float val=0.0;
+    if(f->k >= a->k){
+        for (k=0; k<a->k; k++)
+            for(i=0; i<a->h; i++)
+                for(j=0; j<a->w; j++)
+                    val+= get_val(a,i,j,k) * get_val(f,i,j,k);
+    }
+    return val;
+}
+
 /* Effettua la convoluzione di un ip_mat "a" con un ip_mat "f".
  * La funzione restituisce un ip_mat delle stesse dimensioni di "a".
  *
@@ -842,7 +850,30 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
  */
 ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
 {
-    return NULL;
+    if(a && f){
+        unsigned int k, rows, cols, pad_h, pad_w;
+        ip_mat *temp,*out;
+        temp = ip_mat_create(((a->h) - (f->h)),(a->w) - (f->w), a->k, 0.0 ); /*creazione di una ip_mat temporanea*/
+        for(k=0; k<a->k; k++){
+            for(rows=0; rows<=((a->h) - (f->h)); rows++){
+                for (cols=0; cols<=((a->w) - (f->w)); cols++){
+                    ip_mat *sub;
+                    float val;
+                    sub = ip_mat_subset(a,rows,rows+f->h,cols,cols+f->w);
+                    val = convolve_aux(sub,f);
+                    set_val(temp,rows,cols,k,val);
+                    ip_mat_free(sub);
+                }
+            }
+        }
+        pad_h = (temp->h - 1)/2;
+        pad_w = (temp->w -1)/2;
+        out = ip_mat_padding(temp, pad_h, pad_w); 
+        ip_mat_free(temp);
+        return out;
+    }
+    else 
+        return NULL;
 }
 
 /* Aggiunge un padding all'immagine. Il padding verticale è pad_h mentre quello
@@ -868,7 +899,6 @@ ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w)
     }
     else
         exit(1);
-    
 }
 
 /* Crea un filtro di sharpening */
@@ -876,7 +906,7 @@ ip_mat *create_sharpen_filter()
 {
     /* crea un filtro di sharpening semplice, a un canale */
     ip_mat *out = ip_mat_create(3, 3, 1, 0.0);
-    
+
     if (not_null_ip_mat(out))
     {
         set_val(out, 0, 1, 0, -1.0);
@@ -890,8 +920,7 @@ ip_mat *create_sharpen_filter()
     else
     {
         exit(1);
-    }
-    
+    }  
 }
 
 /* Crea un filtro per rilevare i bordi */
@@ -915,6 +944,7 @@ ip_mat *create_emboss_filter()
     /* crea un filtro di emboss semplice, a un canale */
     ip_mat *out = ip_mat_create(3, 3, 1, 1.0);
     if (not_null_ip_mat(out))
+
     {
         set_val(out, 0, 0, 0, -2.0);
         set_val(out, 0, 1, 0, -1.0);
@@ -938,6 +968,7 @@ ip_mat *create_average_filter(unsigned int h, unsigned int w, unsigned int k)
     float c = 1.0 / (w * h);
     /* crea un filtro average a k canali */
     ip_mat *out = ip_mat_create(h, w, k, c);
+
     if(not_null_ip_mat(out))
     {
         return out;
@@ -966,6 +997,23 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
  * */
 void rescale(ip_mat *t, float new_max)
 {
+    if(t){
+        unsigned int i,j,k;
+        for(k=0; k<t->k; k++){
+            for(i=0; i<t->h; i++){
+                for(j=0; j<t->w; j++){
+                    float val,max,min;
+                    max = t->stat->max;
+                    min = t->stat->min;
+                    val = (get_val(t,i,j,k) - max) / (max-min);
+                    set_val(t,i,j,k,val);
+                    compute_stats(t);
+                    ip_mat_mul_scalar(t,new_max);
+                    /*devo fare la free della t , visto che il metodo ip_mat_mul_scalar ritorna una nuova mat ??*/
+                }
+            }
+        }        
+    }
 }
 
 /* Nell'operazione di clamping i valori <low si convertono in low e i valori >high in high.
