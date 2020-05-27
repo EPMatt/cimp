@@ -18,19 +18,35 @@
 #define COMPUTE_STATS 1
 
 /* tipo canale: matrice di float */
-typedef float **channel_t;
+typedef struct
+{
+    float **data;
+    unsigned int h;
+    unsigned int w;
+} channel_t;
+
+/* data una ip_mat, ottieni una struttura canale, con riferimento al ch-esimo canale */
+channel_t get_channel(ip_mat const *a, unsigned int ch)
+{
+    channel_t out;
+    out.h = a->h;
+    out.w = a->w;
+    /* puntatore al canale */
+    out.data = a->data[ch];
+    return out;
+}
 /*
  * posiziona il contenuto del canale source nel canale dest, posizionando la cella 0,0 del canale source alla posizione row,col del canale dest
  * copia il contenuto di source fino a raggiungere il limite del canale dest, e soltanto se row,col sono indici validi per il canale dest
  * */
-void channel_puts(channel_t dest, unsigned int dest_h, unsigned int dest_w, const channel_t source, unsigned int source_h, unsigned int source_w, unsigned int row, unsigned int col)
+void channel_puts(channel_t const dest, channel_t const source, unsigned int row, unsigned int col)
 {
-    if (row < dest_h && col < dest_w)
+    if (row < dest.h && col < dest.w)
     {
         unsigned int r, c;
-        for (r = 0; r < source_h && r + row < dest_h; r++)
-            for (c = 0; c < source_w && c + col < dest_w; c++)
-                dest[row + r][col + c] = source[r][c];
+        for (r = 0; r < source.h && r + row < dest.h; r++)
+            for (c = 0; c < source.w && c + col < dest.w; c++)
+                dest.data[row + r][col + c] = source.data[r][c];
     }
 }
 
@@ -39,14 +55,14 @@ void channel_puts(channel_t dest, unsigned int dest_h, unsigned int dest_w, cons
  * per tutti i canali di source (massimo il numero di canali di dest) posiziona la cella 0,0 del canale di source alla posizione row,col del canale di dest
  * copia il contenuto di source fino a raggiungere il limite del canale di dest, e soltanto se row,col sono indici validi per la matrice dest
  * */
-void ip_mat_puts(ip_mat *dest, const ip_mat *source, unsigned int row, unsigned int col, int do_compute_stats)
+void ip_mat_puts(ip_mat *dest, ip_mat const *source, unsigned int row, unsigned int col, int do_compute_stats)
 {
     if (row < dest->h && col < dest->w)
     {
         /* ripeti per tutti i canali di source (massimo dest->k) */
         unsigned int k;
         for (k = 0; k < dest->k && k < source->k; k++)
-            channel_puts(dest->data[k], dest->h, dest->w, source->data[k], source->h, source->w, row, col);
+            channel_puts(get_channel(dest, k), get_channel(source, k), row, col);
         /* se richiesto ricalcola gli stats */
         if (do_compute_stats)
             compute_stats(dest);
@@ -205,13 +221,13 @@ void two_not_null_ip_mat(ip_mat *a, ip_mat *b)
 }
 
 /* calcola la somma di prodotti tra il kernel fornito e il canale fornito, partendo dalla posizione (start_h,start_w) del canale */
-float convolve_channel(channel_t ch, channel_t filter, unsigned int ch_h, unsigned int ch_w, unsigned int filter_h, unsigned int filter_w, unsigned int start_h, unsigned int start_w)
+float convolve_channel(channel_t ch, channel_t filter, unsigned int start_h, unsigned int start_w)
 {
     float result = 0.0;
     unsigned int row, col;
-    for (row = 0; row < filter_h; row++)
-        for (col = 0; col < filter_w; col++)
-            result += ch[start_h + row][start_w + col] * filter[row][col];
+    for (row = 0; row < filter.h; row++)
+        for (col = 0; col < filter.w; col++)
+            result += ch.data[start_h + row][start_w + col] * filter.data[row][col];
     return result;
 }
 
@@ -788,7 +804,7 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
 {
     ip_mat *padded, *out;
-    channel_t *fil_ch;
+    channel_t fil_ch;
     unsigned int ch, row, col, pad_h, pad_w;
     not_null_ip_mat(a);
     not_null_ip_mat(f);
@@ -797,15 +813,14 @@ ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
     /* inizializza matrici per il calcolo della convolve */
     padded = ip_mat_padding(a, pad_h, pad_w);
     out = ip_mat_create(a->h, a->w, a->k, 0.0);
-    fil_ch = f->data;
     for (ch = 0; ch < a->k; ch++)
     {
+        /* questa operazione assicura che vengano applicati i primi a->k canali del filtro all'immagine, e se il filtro non ha canali sufficienti si applica sempre l'ultimo canale del filtro disponibile */
+        if (ch < f->k)
+            fil_ch = get_channel(f, ch);
         for (row = 0; row < a->h; row++)
             for (col = 0; col < a->w; col++)
-                set_val(out, row, col, ch, convolve_channel(padded->data[ch], *fil_ch, padded->h, padded->w, f->h, f->w, row, col));
-        /* questa operazione assicura che vengano applicati i primi a->k canali del filtro all'immagine, e se il filtro non ha canali sufficienti si applica sempre l'ultimo canale del filtro disponibile */
-        if (ch < f->k - 1)
-            fil_ch++;
+                set_val(out, row, col, ch, convolve_channel(get_channel(padded, ch), fil_ch, row, col));
     }
     /* libera la matrice temporanea */
     ip_mat_free(padded);
