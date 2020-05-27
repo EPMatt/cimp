@@ -244,66 +244,42 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
         nuova->data = (float ***)malloc(sizeof(float **) * k);
         nuova->stat = (stats *)malloc(sizeof(stats) * k);
         /* canale */
-
-
-        if(nuova->data)
-        {
-            for (c = 0; c < k; c++)
-                nuova->data[c] = (float **)malloc(sizeof(float *) * h);
-            
-            for (c = 0; c < k; c++)
+        
+        for (c = 0; c < k; c++)
+            nuova->data[c] = (float **)malloc(sizeof(float *) * h);
+        for (c = 0; c < k; c++)
+        {   
+            if(nuova->data[c])
             {
-                if(nuova->data[c])
+                for (i = 0; i < h; i++)
+                    nuova->data[c][i] = (float *)malloc(sizeof(float) * w);
+            }
+            else
+            {
+                printf("Fail: creation nuova->data[c]\n c generic position\n");
+                exit(1);
+            }
+            
+        }
+        /* inizializzazione dei valori della matrice */
+        for (c = 0; c < k; c++)
+        {
+            for (i = 0; i < h; i++)
+            {   
+                if(nuova->data[c][i])
                 {
-                    for (i = 0; i < h; i++)
-                        {   if(nuova->data[c][i])
-                                nuova->data[c][i] = (float *)malloc(sizeof(float) * w);
-                            else
-                            {
-                                printf("fail: create data[c][i]\n c,i generic position");
-                                exit(1);
-                            }
-                            
-                        }
+                    for (j = 0; j < w; j++)
+                        set_val(nuova, i, j, c, v);
                 }
                 else
                 {
-                    printf("fail: create data[c]\n c = generic position\n");
+                    printf("Fail: Creatiion nuova->data[c][i]\n c,i generic position\n");
                     exit(1);
                 }
                 
             }
-            
-            
-            
-            /* inizializzazione dei valori della matrice */
-            for (c = 0; c < k; c++)
-            {
-                for (i = 0; i < h; i++)
-                {   
-                    for (j = 0; j < w; j++)
-                    {
-                        if(nuova->data[c][i][j])
-                            set_val(nuova, i, j, c, v);
-                        else
-                        {
-                            printf("fail: create data[c][[i][j]\n  c,i,j = generic position\n");
-                            exit(1);
-                        }
-                        
-                    }
-                }
-            }
         }
-        else
-        {
-            printf("fail: data create");
-            exit(1);
-        }
-        
         /* riempio i valori di stats per ogni canale */
-        
-        
         if(nuova->stat)
         {
             for (c = 0; c < k; c++)
@@ -313,12 +289,6 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
                 nuova->stat[c].mean = v;
             }
         }
-        else
-        {
-            printf("fail: create stat\n");
-            exit(1);
-                    }
-        
 
         return nuova;
     }
@@ -330,6 +300,7 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
     }
     
 }
+
 
 /* Libera la memoria (data, stat e la struttura) */
 void ip_mat_free(ip_mat *a)
