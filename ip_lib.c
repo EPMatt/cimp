@@ -211,10 +211,9 @@ float convolve_channel(channel_t ch, channel_t filter, unsigned int ch_h, unsign
     unsigned int row, col;
     for (row = 0; row < filter_h; row++)
         for (col = 0; col < filter_w; col++)
-            result += ch[start_h+row][start_w+col] * filter[row][col];
+            result += ch[start_h + row][start_w + col] * filter[row][col];
     return result;
 }
-
 
 /* END HELPERS */
 
@@ -749,24 +748,24 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
     not_null_ip_mat(a);
 
     if (amount >= MIN_PIXEL_FLOAT && amount <= MAX_PIXEL_FLOAT)
-    {   
-        unsigned int l,h,w;
+    {
+        unsigned int l, h, w;
         ip_mat *out;
-        ip_mat* temp=ip_mat_create(a->h, a->w, a->k, 0.0);
-        float sup=0.0;
-        
-        for(l=0; l<a->k; l++)
+        ip_mat *temp = ip_mat_create(a->h, a->w, a->k, 0.0);
+        float sup = 0.0;
+
+        for (l = 0; l < a->k; l++)
         {
-            for(h=0;h<a->h; h++)
+            for (h = 0; h < a->h; h++)
             {
-                for(w = 0; w<a->w; w++)
+                for (w = 0; w < a->w; w++)
                 {
-                    sup = get_normal_random(0.0, amount/2);
+                    sup = get_normal_random(0.0, amount / 2);
                     set_val(temp, h, w, l, sup);
                 }
             }
         }
-        out=ip_mat_sum(a,temp);
+        out = ip_mat_sum(a, temp);
         ip_mat_free(temp);
 
         return out;
@@ -780,7 +779,6 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 
 /**** PARTE 3: CONVOLUZIONE E FILTRI *****/
 
-
 /* Effettua la convoluzione di un ip_mat "a" con un ip_mat "f".
  * La funzione restituisce un ip_mat delle stesse dimensioni di "a".
  *
@@ -790,7 +788,7 @@ ip_mat *ip_mat_corrupt(ip_mat *a, float amount)
 ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
 {
     ip_mat *padded, *out;
-    channel_t fil_ch;
+    channel_t *fil_ch;
     unsigned int ch, row, col, pad_h, pad_w;
     not_null_ip_mat(a);
     not_null_ip_mat(f);
@@ -799,14 +797,14 @@ ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
     /* inizializza matrici per il calcolo della convolve */
     padded = ip_mat_padding(a, pad_h, pad_w);
     out = ip_mat_create(a->h, a->w, a->k, 0.0);
-    fil_ch = *(f->data);
+    fil_ch = f->data;
     for (ch = 0; ch < a->k; ch++)
     {
         for (row = 0; row < a->h; row++)
             for (col = 0; col < a->w; col++)
-                set_val(out, row, col, ch, convolve_channel(padded->data[ch], fil_ch, padded->h, padded->w, f->h, f->w, row, col));
+                set_val(out, row, col, ch, convolve_channel(padded->data[ch], *fil_ch, padded->h, padded->w, f->h, f->w, row, col));
         /* questa operazione assicura che vengano applicati i primi a->k canali del filtro all'immagine, e se il filtro non ha canali sufficienti si applica sempre l'ultimo canale del filtro disponibile */
-        if (fil_ch < *(f->data) + f->k-1)
+        if (ch < f->k - 1)
             fil_ch++;
     }
     /* libera la matrice temporanea */
@@ -965,14 +963,14 @@ void rescale(ip_mat *t, float new_max)
                 for (j = 0; j < t->w; j++)
                 {
                     float val, max, min;
-                    mmax = t->stat[k].max;
+                    max = t->stat[k].max;
                     min = t->stat[k].min;
                     val = (get_val(t, i, j, k) - max) / (max - min);
                     set_val(t, i, j, k, val);
                 }
             }
         }
-        t=ip_mat_mul_scalar(t,new_max);   
+        t = ip_mat_mul_scalar(t, new_max);
     }
 }
 
