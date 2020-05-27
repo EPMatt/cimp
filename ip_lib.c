@@ -979,8 +979,43 @@ ip_mat *create_average_filter(unsigned int h, unsigned int w, unsigned int k)
 
 /* Crea un filtro gaussiano per la rimozione del rumore */
 ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, float sigma)
-{
-    return NULL;
+{/*non provato*/
+    if(h>=3 && w>=3 && k>0 && sigma>0){
+        unsigned int cx, cy,row,col,channel;
+        float sum=0.0;
+        ip_mat *out;
+        out = ip_mat_create(h,w,k,0.0); 
+        cx = w/2;
+        cy = h/2;
+        for(channel=0; channel<k; channel++){
+            for(row=0; row<h; row++){
+                for(col=0; col<w; col++){
+                    unsigned int x,y;
+                    float val;
+                    x = row - cy;
+                    y = col - cx;
+                    val = (1./(2.*PI*(sigma*sigma))) * exp(-(x*x + y*y)/(2.*(x*x))); /*il valore da inserire , calcolato secondo la formula data*/
+                    set_val(out,row,col,channel,val); /*inserisco il valore nella sua posizione*/
+                    sum += get_val(out,row,col,channel); /*incremento la somma , per avere la somma finale*/
+                }
+            }
+        }
+        
+        for(channel=0; channel<k; channel++){
+            for(row=0; row<h; row++){
+                for(col=0; col<w; col++){
+                    float new_val;
+                    new_val = get_val(out,row,col,channel) / sum ;
+                    set_val(out,row,col,channel,new_val);
+                }
+            }
+        }
+        return out;
+    }
+    else {
+        printf("Passed parameters are invalid , please enter other parameters");
+        exit(1);
+    }
 }
 
 /* Effettua una riscalatura dei dati tale che i valori siano in [0,new_max].
@@ -1008,8 +1043,8 @@ void rescale(ip_mat *t, float new_max)
                     val = (get_val(t,i,j,k) - max) / (max-min);
                     set_val(t,i,j,k,val);
                     compute_stats(t);
-                    ip_mat_mul_scalar(t,new_max);
-                    /*devo fare la free della t , visto che il metodo ip_mat_mul_scalar ritorna una nuova mat ??*/
+                    t=ip_mat_mul_scalar(t,new_max);
+                    /*fare la verifica dei valori min e max, funzione non provata*/
                 }
             }
         }        
