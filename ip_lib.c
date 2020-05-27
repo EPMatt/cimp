@@ -351,9 +351,9 @@ void compute_stats(ip_mat *t)
     for (i = 0; i < t->k; i++)
     {
         /*per ogni canale chiamo le funzioni min, max e mean per trovare rispettivamente il minimo, massimo e la media della matrice di quel canale*/
-        t->stat->max = max(t, i);
-        t->stat->min = min(t, i);
-        t->stat->mean = mean(t, i);
+        t->stat[i].max = max(t, i);
+        t->stat[i].min = min(t, i);
+        t->stat[i].mean = mean(t, i);
     }
 }
 
