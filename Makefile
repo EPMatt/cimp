@@ -16,7 +16,7 @@ test:
 
 clean:
 		@echo "\nCleaning compiled files...\n"
-		@rm -f test_bmp main_iplib $(OBJECTS)
+		@rm -f test_bmp main_iplib test_iplib $(OBJECTS)
 		@echo "\n...done!\n"
 
 test_ip_lib: bmp.o ip_lib.o ip_lib.h bmp.h

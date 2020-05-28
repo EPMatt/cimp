@@ -6,6 +6,7 @@
 #define MAT_W 10
 #define MAT_H 20
 #define MAT_CHANNELS 3
+#define TOTAL_TESTS_NUM MAT_CHANNELS + 22
 
 int main()
 {
@@ -13,9 +14,9 @@ int main()
     ip_mat **round_arr;
     for (round = 0; round < ROUNDS_NUM; round++)
     {
-        ip_mat **pt, *a_pt, *b_pt;
+        ip_mat **pt, *original_pt, *a_pt, *b_pt;
         int row, col, ch;
-        round_arr = (ip_mat **)malloc(sizeof(ip_mat *) * (18 + MAT_CHANNELS));
+        round_arr = (ip_mat **)malloc(sizeof(ip_mat *) * (TOTAL_TESTS_NUM));
         pt = round_arr;
         printf("TEST No.%d: Start...\n", round);
         /* execute all the exposed library functions (those declared in the header file) */
@@ -37,17 +38,17 @@ int main()
         }
         printf("\tcompute_stats...\n");
         compute_stats(*pt);
-        printf("\tip_mat_init_random...\n");
-        ip_mat_init_random(*pt, 10.0, 0.5);
+        original_pt = *pt;
         pt++;
+        printf("\tip_mat_init_random...\n");
+        ip_mat_init_random(original_pt, 10.0, 0.5);
         printf("\tip_mat_copy...\n");
-        *pt = ip_mat_copy(*(pt - 1));
+        *pt = ip_mat_copy(original_pt);
         pt++;
         printf("\tip_mat_subset...\n");
-        *pt = ip_mat_subset(*(pt - 1), 0, MAT_H, 0, MAT_W);
-        pt++;
-        a_pt = *(pt - 3);
-        b_pt = *(pt - 2);
+        *pt = ip_mat_subset(original_pt, 0, MAT_H, 0, MAT_W);
+        a_pt = original_pt;
+        b_pt = original_pt;
         pt++;
         /* test concat on all channels */
         printf("\tip_mat_concat...\n");
@@ -64,26 +65,27 @@ int main()
         *pt = ip_mat_sub(a_pt, b_pt);
         pt++;
         printf("\tip_mat_mul_scalar...\n");
-        *pt = ip_mat_mul_scalar(*(pt - 1), 10.0);
+        *pt = ip_mat_mul_scalar(original_pt, 10.0);
         pt++;
         printf("\tip_mat_add_scalar...\n");
-        *pt = ip_mat_add_scalar(*(pt - 1), 10.0);
+        *pt = ip_mat_add_scalar(original_pt, 10.0);
         pt++;
         printf("\tip_mat_mean...\n");
         *pt = ip_mat_mean(a_pt, b_pt);
         pt++;
         /* PART 2 */
         printf("\tip_mat_to_gray_scale...\n");
-        *pt = ip_mat_to_gray_scale(*(pt - 1));
+        *pt = ip_mat_to_gray_scale(original_pt);
         pt++;
         printf("\tip_mat_blend...\n");
         *pt = ip_mat_blend(a_pt, b_pt, 0.5);
         pt++;
         printf("\tip_mat_brighten...\n");
-        *pt = ip_mat_brighten(*(pt - 1), 0.5);
+        *pt = ip_mat_brighten(original_pt, 0.5);
         pt++;
         printf("\tip_mat_corrupt...\n");
-        *pt = ip_mat_corrupt(*(pt - 1), 2.0);
+        *pt = ip_mat_corrupt(original_pt, 2.0);
+        pt++;
         /* PART 3 */
         /* first make some filters */
         printf("\tcreate_sharpen_filter...\n");
@@ -116,15 +118,14 @@ int main()
         pt++;
         printf("\tip_mat_convolve (gaussian_filter)...\n");
         *pt = ip_mat_convolve(a_pt, *(pt - 5));
-        pt++;
         /* clamp & rescale on last ip_mat */
-        printf("\trescale...\n");
-        rescale(*pt, 100.0);
         printf("\tclamp...\n");
         clamp(*pt, 50.0, 75.0);
+        printf("\trescale...\n");
+        rescale(*pt, 100.0);
         /* free everything */
         printf("\tip_mat_free...\n");
-        for (pt = round_arr; pt < round_arr + (18 + MAT_CHANNELS); pt++)
+        for (pt = round_arr; pt < round_arr + TOTAL_TESTS_NUM; pt++)
             ip_mat_free(*pt);
         printf("\tall tests done! free the round array...\n");
         free(round_arr);

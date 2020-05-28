@@ -318,7 +318,7 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
 /* Libera la memoria (data, stat e la struttura) */
 void ip_mat_free(ip_mat *a)
 {
-    if (a != NULL)
+    if (a)
     {
         unsigned int ch, row;
         /* libera stats */
@@ -411,12 +411,11 @@ void ip_mat_init_random(ip_mat *t, float mean, float std)
 ip_mat *ip_mat_copy(ip_mat *in)
 {
     unsigned int ch;
-
-    ip_mat *new_mat = ip_mat_create(in->h, in->w, in->k, 0.0);
+    ip_mat *new_mat;
 
     not_null_ip_mat(in);
-    not_null_ip_mat(new_mat);
 
+    new_mat = ip_mat_create(in->h, in->w, in->k, 0.0);
     ip_mat_puts(new_mat, in, 0, 0, NO_COMPUTE_STATS);
     /* copia gli stats dei canali senza ricalcolarli */
     for (ch = 0; ch < new_mat->k; ch++)
@@ -967,24 +966,21 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
  * */
 void rescale(ip_mat *t, float new_max)
 {
-    if (t)
+    unsigned int i, j, k;
+    not_null_ip_mat(t);
+    for (k = 0; k < t->k; k++)
     {
-        unsigned int i, j, k;
-        for (k = 0; k < t->k; k++)
+        for (i = 0; i < t->h; i++)
         {
-            for (i = 0; i < t->h; i++)
+            for (j = 0; j < t->w; j++)
             {
-                for (j = 0; j < t->w; j++)
-                {
-                    float val, max, min;
-                    max = t->stat[k].max;
-                    min = t->stat[k].min;
-                    val = (get_val(t, i, j, k) - max) / (max - min);
-                    set_val(t, i, j, k, val);
-                }
+                float val, max, min;
+                max = t->stat[k].max;
+                min = t->stat[k].min;
+                val = (get_val(t, i, j, k) - min) / (max - min) * new_max;
+                set_val(t, i, j, k, val);
             }
         }
-        t = ip_mat_mul_scalar(t, new_max);
     }
 }
 
