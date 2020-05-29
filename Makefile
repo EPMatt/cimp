@@ -11,15 +11,18 @@ build:
 
 test:
 		@echo "\nBuilding sources for testing...\n"
-		@make -e MAKE_ENV=test main_ip_lib test_ip_lib
+		@make -e MAKE_ENV=test main_ip_lib test_iplib
 		@echo "\n...done!\n"
+
+test-run:
+	valgrind -v --leak-check=full --track-origins=yes ./test_iplib 
 
 clean:
 		@echo "\nCleaning compiled files...\n"
 		@rm -f test_bmp main_iplib test_iplib $(OBJECTS)
 		@echo "\n...done!\n"
 
-test_ip_lib: bmp.o ip_lib.o ip_lib.h bmp.h
+test_iplib: bmp.o ip_lib.o ip_lib.h bmp.h
 	gcc test_iplib.c bmp.o ip_lib.o $(TEST_FLAGS) -o test_iplib
 
 main_ip_lib: $(OBJECTS) ip_lib.h bmp.h
@@ -49,4 +52,4 @@ bmp.o:bmp.c bmp.h
 test_bmp:test_bmp.c bmp.o bmp.h
 		gcc test_bmp.c bmp.o -o test_bmp -Wall -lm
 
-.PHONY: clean build test
+.PHONY: build test test-run clean
