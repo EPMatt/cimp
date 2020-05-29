@@ -925,14 +925,11 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
                     float val;
                     x = row - cx;
                     y = col - cy;
-                    printf("ch=%d row=%d col=%d x=%d y=%d\n", channel, row, col, x, y);
                     val = (1. / (2. * PI * sigma * sigma)) * exp(-(x * x + y * y) / (2. * sigma * sigma)); /*il valore da inserire , calcolato secondo la formula data*/
                     set_val(out, row, col, channel, val);                                                      /*inserisco il valore nella sua posizione*/
                     sums[channel] += get_val(out, row, col, channel);
-                    printf("val= %f SUM %f\n",val,  sums[channel]);                                                    /*incremento la somma , per avere la somma finale*/
                 }
             }
-            printf("sum for this channel %f\n",sums[channel]);
         }
 
         for (channel = 0; channel < k; channel++)
