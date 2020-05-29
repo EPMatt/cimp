@@ -17,14 +17,6 @@
 #define NO_COMPUTE_STATS 0
 #define COMPUTE_STATS 1
 
-/* tipo canale: matrice di float */
-typedef struct
-{
-    float **data;
-    unsigned int h;
-    unsigned int w;
-} channel_t;
-
 /* data una ip_mat, ottieni una struttura canale, con riferimento al ch-esimo canale */
 channel_t get_channel(ip_mat const *a, unsigned int ch)
 {
@@ -216,26 +208,6 @@ void equal_dimension(ip_mat *a, ip_mat *b)
  * restituisce un messaggio di errore nel caso in cui la matrice passata sia NULL
  **/
 
-void not_null_ip_mat(ip_mat *a)
-{
-    if (a == NULL)
-    {
-        printf("Parameter passed NULL\n");
-        exit(1);
-    }
-}
-
-/**
- * restituisce un messaggio di errore nel caso in cui una o più ip_mat siano null
- **/
-void two_not_null_ip_mat(ip_mat *a, ip_mat *b)
-{
-    if (a == NULL || b == NULL)
-    {
-        printf("one or more Parameter passed NULL\n");
-        exit(1);
-    }
-}
 
 /* calcola la somma di prodotti tra il kernel fornito e il canale fornito, partendo dalla posizione (start_h,start_w) del canale */
 float convolve_channel(channel_t ch, channel_t filter, unsigned int start_h, unsigned int start_w)
@@ -872,7 +844,7 @@ ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w)
 {
     ip_mat *out = ip_mat_create(a->h + 2 * pad_h, a->w + 2 * pad_w, a->k, 0.0);
     
-    not_null_ip_mat(out)
+    not_null_ip_mat(out);
     
     ip_mat_puts(out, a, pad_h, pad_w, COMPUTE_STATS);
     
