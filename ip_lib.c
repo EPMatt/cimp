@@ -69,131 +69,6 @@ void ip_mat_puts(ip_mat *dest, ip_mat const *source, unsigned int row, unsigned 
     }
 }
 
-/*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
-float min(ip_mat *a, int k)
-{
-    if (a)
-    {
-        unsigned int i, j;
-        float minimo;
-        minimo = get_val(a, 0, 0, k); /*metto come minimo il primo elemento della matrice*/
-
-        for (i = 0; i < a->h; i++)
-        {
-            for (j = 0; j < a->w; j++)
-            {
-                if (minimo > get_val(a, i, j, k))
-                    minimo = get_val(a, i, j, k);
-            }
-        }
-        return minimo;
-    }
-    else
-        return 0;
-}
-
-/*funzione aux che mi calcola il valore massimo di un determinato canale k*/
-float max(ip_mat *a, int k)
-{
-    /*verifico se la ip_mat a è diversa da NULL*/
-    if (a)
-    {
-        unsigned int i, j;
-        float massimo;
-        /*all'inizio metto come massimo il primo elemento della matrice e dopo vado a verificare se c'è un altro elemento maggiore*/
-        massimo = get_val(a, 0, 0, k);
-
-        for (i = 0; i < a->h; i++)
-        {
-            for (j = 0; j < a->w; j++)
-            {
-                if (massimo < get_val(a, i, j, k))
-                    massimo = get_val(a, i, j, k);
-            }
-        }
-        return massimo;
-    }
-    else
-        return 0;
-}
-
-/*mean è la funzione aux che mi permette di calcolare la media degli elementi che si trovano in un determinato canale k*/
-float mean(ip_mat *a, int k)
-{
-    if (a)
-    { /*verifico se la ip_mat a != NULL*/
-        unsigned int i, j, nr_el;
-        float somma, media;
-        somma = 0.0;
-        nr_el = 0;
-
-        for (i = 0; i < a->h; i++)
-        {
-            for (j = 0; j < a->w; j++)
-            {
-                somma += get_val(a, i, j, k);
-                nr_el++;
-            }
-        }
-
-        media = somma / nr_el;
-        return media;
-    }
-    else
-        return 0;
-}
-
-/* restringi il valore fornito all'interno del range low...high, estremi inclusi */
-float restrict_val(float val, float low, float high)
-{
-    if (val < low)
-        return low;
-    else if (val > high)
-        return high;
-    else
-        return val;
-}
-
-/**
- * Calcola la media per ogni pixel sui tre canali, prendendo un indice colonna e un indice riga.
- * 
- * */
-
-float mean_pixel_channel(ip_mat *a, unsigned int i, unsigned int j)
-{
-
-    if (a)
-    {
-        unsigned int l;
-        float sup = 0.0;
-
-        for (l = 0; l < a->k; l++)
-        {
-            sup += get_val(a, i, j, l);
-        }
-
-        sup = sup / a->k;
-
-        return sup;
-    }
-    else
-        return 0.0;
-}
-
-/**
- * Controlla se due ip_mmat hanno le stesse dimensioni oppre no
- * esce dal programma nel momento in cui una delle dimensioni é diversa
- */
-
-void equal_dimension(ip_mat *a, ip_mat *b)
-{
-
-    if ((a->h != b->h) || ((a->w != b->w) && (a->k != b->k)))
-    {
-        printf("No equal size of images! \nPlease, Provide images with the same dimensions \n");
-        exit(1);
-    }
-}
 
 /**
  * restituisce un messaggio di errore nel caso in cui la matrice passata sia NULL
@@ -219,6 +94,127 @@ void two_not_null_ip_mat(ip_mat *a, ip_mat *b)
         exit(1);
     }
 }
+
+/*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
+float min(ip_mat *a, int k)
+{
+    unsigned int i, j;
+    float minimo = 0.0;
+    
+    not_null_ip_mat(a);
+    
+    minimo = get_val(a, 0, 0, k); /*metto come minimo il primo elemento della matrice*/
+
+    for (i = 0; i < a->h; i++)
+    {
+        for (j = 0; j < a->w; j++)
+        {
+            if (minimo > get_val(a, i, j, k))
+                minimo = get_val(a, i, j, k);
+        }
+    }
+    return minimo;
+}
+
+/*funzione aux che mi calcola il valore massimo di un determinato canale k*/
+float max(ip_mat *a, int k)
+{
+    unsigned int i, j;
+    float massimo = 0.0;
+
+    /*verifico se la ip_mat a è diversa da NULL*/
+    
+    not_null_ip_mat(a);
+    
+    /*all'inizio metto come massimo il primo elemento della matrice e dopo vado a verificare se c'è un altro elemento maggiore*/
+    
+    massimo = get_val(a, 0, 0, k);
+
+    for (i = 0; i < a->h; i++)
+    {
+        for (j = 0; j < a->w; j++)
+        {
+            if (massimo < get_val(a, i, j, k))
+                massimo = get_val(a, i, j, k);
+        }
+    }
+    return massimo;
+}
+
+/*mean è la funzione aux che mi permette di calcolare la media degli elementi che si trovano in un determinato canale k*/
+float mean(ip_mat *a, int k)
+{ 
+    unsigned int i, j, nr_el;
+    float somma = 0.0;
+    float media = 0.0;
+
+
+    /*verifico se la ip_mat a != NULL*/
+    not_null_ip_mat(a);
+
+    nr_el = 0;
+
+    for (i = 0; i < a->h; i++)
+    {
+        for (j = 0; j < a->w; j++)
+        {
+            somma += get_val(a, i, j, k);
+            nr_el++;
+        }
+    }
+
+    media = somma / nr_el;
+    return media;
+}
+
+/* restringi il valore fornito all'interno del range low...high, estremi inclusi */
+float restrict_val(float val, float low, float high)
+{
+    if (val < low)
+        return low;
+    else if (val > high)
+        return high;
+    else
+        return val;
+}
+
+/**
+ * Calcola la media per ogni pixel sui tre canali, prendendo un indice colonna e un indice riga.
+ * 
+ * */
+
+float mean_pixel_channel(ip_mat *a, unsigned int i, unsigned int j)
+{
+    unsigned int l;
+    float sup = 0.0;
+    
+    not_null_ip_mat(a);
+
+    for (l = 0; l < a->k; l++)
+    {
+        sup += get_val(a, i, j, l);
+    }
+
+    sup = sup / a->k;
+
+    return sup;
+}
+
+/**
+ * Controlla se due ip_mmat hanno le stesse dimensioni oppre no
+ * esce dal programma nel momento in cui una delle dimensioni é diversa
+ */
+
+void equal_dimension(ip_mat *a, ip_mat *b)
+{
+
+    if ((a->h != b->h) || ((a->w != b->w) && (a->k != b->k)))
+    {
+        printf("No equal size of images! \nPlease, Provide images with the same dimensions \n");
+        exit(1);
+    }
+}
+
 
 /* calcola la somma di prodotti tra il kernel fornito e il canale fornito, partendo dalla posizione (start_h,start_w) del canale */
 float convolve_channel(channel_t ch, channel_t filter, unsigned int start_h, unsigned int start_w)
@@ -434,7 +430,10 @@ ip_mat *ip_mat_copy(ip_mat *in)
  * */
 ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end)
 {
+   
     ip_mat *subset_mat = NULL;
+    not_null_ip_mat(t);
+ 
     if (row_start <= row_end && col_start <= col_end && row_end <= t->h && col_end <= t->w)
     {
         unsigned int ch, row, col;
@@ -812,6 +811,9 @@ ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
     /* inizializza matrici per il calcolo della convolve */
     padded = ip_mat_padding(a, pad_h, pad_w);
     out = ip_mat_create(a->h, a->w, a->k, 0.0);
+    
+    not_null_ip_mat(out);
+ 
     for (ch = 0; ch < a->k; ch++)
     {
         /* questa operazione assicura che vengano applicati i primi a->k canali del filtro all'immagine, e se il filtro non ha canali sufficienti si applica sempre l'ultimo canale del filtro disponibile */
@@ -841,8 +843,8 @@ ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
 ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w)
 {
     ip_mat *out = ip_mat_create(a->h + 2 * pad_h, a->w + 2 * pad_w, a->k, 0.0);
-    if (out)
-        ip_mat_puts(out, a, pad_h, pad_w, COMPUTE_STATS);
+    not_null_ip_mat(out);
+    ip_mat_puts(out, a, pad_h, pad_w, COMPUTE_STATS);
     return out;
 }
 
@@ -912,6 +914,9 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
         float *sums=(float*)malloc(sizeof(float)*k);
         ip_mat *out;
         out = ip_mat_create(h, w, k, 0.0);
+        
+        not_null_ip_mat(out);
+ 
         cx = w / 2;
         cy = h / 2;
         for (channel = 0; channel < k; channel++)
