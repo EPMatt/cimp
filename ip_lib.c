@@ -909,26 +909,30 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
     if (h >= 3 && w >= 3 && k > 0 && sigma > 0)
     {
         unsigned int cx, cy, row, col, channel;
-        float sum = 0.0;
+        float *sums=(float*)malloc(sizeof(float)*k);
         ip_mat *out;
         out = ip_mat_create(h, w, k, 0.0);
         cx = w / 2;
         cy = h / 2;
         for (channel = 0; channel < k; channel++)
         {
+            sums[channel]=0.0;
             for (row = 0; row < h; row++)
             {
                 for (col = 0; col < w; col++)
                 {
-                    unsigned int x, y;
+                    int x, y;
                     float val;
-                    x = row - cy;
-                    y = col - cx;
-                    val = (1. / (2. * PI * (sigma * sigma))) * exp(-(x * x + y * y) / (2. * (x * x))); /*il valore da inserire , calcolato secondo la formula data*/
-                    set_val(out, row, col, channel, val);                                              /*inserisco il valore nella sua posizione*/
-                    sum += get_val(out, row, col, channel);                                            /*incremento la somma , per avere la somma finale*/
+                    x = (row > cx) ? row - cx : cx - row;
+                    y = (col > cy) ? col - cy : cy - col;
+                    printf("ch=%d row=%d col=%d x=%d y=%d\n", channel, row, col, x, y);
+                    val = (1. / (2. * PI * sigma * sigma)) * exp(-(x * x + y * y) / (2. * sigma * sigma)); /*il valore da inserire , calcolato secondo la formula data*/
+                    set_val(out, row, col, channel, val);                                                      /*inserisco il valore nella sua posizione*/
+                    sums[channel] += get_val(out, row, col, channel);                                                    /*incremento la somma , per avere la somma finale*/
+                    printf("val= %f SUM %f\n",val,  sums[channel]);
                 }
             }
+            printf("sum for this channel %f\n",sums[channel]);
         }
 
         for (channel = 0; channel < k; channel++)
@@ -938,11 +942,12 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
                 for (col = 0; col < w; col++)
                 {
                     float new_val;
-                    new_val = get_val(out, row, col, channel) / sum;
+                    new_val = get_val(out, row, col, channel) / sums[channel];
                     set_val(out, row, col, channel, new_val);
                 }
             }
         }
+        free(sums);
         return out;
     }
     else
