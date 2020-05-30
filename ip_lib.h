@@ -70,12 +70,7 @@ void ip_mat_puts(ip_mat *dest, ip_mat const *source, unsigned int row, unsigned 
 /**
  * restituisce un messaggio di errore nel caso in cui la matrice passata sia NULL
  **/
-void not_null_ip_mat(ip_mat *a);
-
-/**
- * restituisce un messaggio di errore nel caso in cui una o più ip_mat siano null
- **/
-void two_not_null_ip_mat(ip_mat *a, ip_mat *b);
+void not_null_ip_mat(ip_mat const *a);
 
 /*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
 float min(ip_mat *a, int k);
