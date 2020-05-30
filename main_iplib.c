@@ -1,3 +1,16 @@
+
+/**
+ * ID GRUPPO         :   20
+ * NOME GRUPPO       :   MVP
+ *
+ * MEMBRI:
+ *        Ina Popescu                  matricola:	***REMOVED***
+ *        Matteo Agnoletto             matricola:	***REMOVED***
+ *        Lorenzo Armando Donatelli    matricola:	***REMOVED***
+ * 
+ **/
+
+
 #include <stdio.h>
 #include <string.h>
 #include "ip_lib.h"
