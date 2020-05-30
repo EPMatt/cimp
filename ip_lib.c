@@ -443,9 +443,14 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
                 for (col = col_start; col < col_end; col++)
                     set_val(subset_mat, row, col, ch, get_val(t, row, col, ch));
         }
+        compute_stats(subset_mat);
+        return subset_mat;
     }
-    compute_stats(subset_mat);
-    return subset_mat;
+    else
+    {
+        printf("Invalid row,col indexes");
+        exit(1);
+    }
 }
 
 /* Concatena due ip_mat su una certa dimensione.
