@@ -9,7 +9,7 @@
   - [Membri del gruppo](#membri-del-gruppo)
 
 ## Introduzione
-Spiegazioni basilari funzioni ausiliarie gruppo MVP
+Spiegazioni basilari funzioni ausiliarie gruppo MVP, ID Gruppo 20
 ## Note importanti
 Per la realizzazione del file ip_lib.c si è preferito, come visualizzazione delle matrici ip_mat l’ordine delle dimensioni k h w, cioè i campi che puntano ad array  multidimensionali frastagliati di dimensione h x w.
 
