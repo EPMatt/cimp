@@ -299,7 +299,7 @@ ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v)
     else
     { /** nel caso in cui la creazione della nuova ip_mat fallisca **/
 
-        printf("Unable to allocate matrix structure");
+        printf("Unable to allocate matrix structure\n");
         exit(1);
     }
 }
@@ -336,7 +336,7 @@ float get_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k)
         return a->data[k][i][j];
     else
     {
-        printf("Errore get_val!!!");
+        printf("Errore get_val!!!\n");
         exit(1);
     }
 }
@@ -349,7 +349,7 @@ void set_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k, float v)
         a->data[k][i][j] = v;
     else
     {
-        printf("Errore set_val!!!");
+        printf("Errore set_val!!!\n");
         exit(1);
     }
 }
@@ -445,7 +445,7 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
     }
     else
     {
-        printf("Invalid row,col indexes");
+        printf("Invalid row,col indexes\n");
         exit(1);
     }
 }
@@ -953,7 +953,7 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
     }
     else
     {
-        printf("Passed parameters are invalid , please enter other parameters");
+        printf("Passed parameters are invalid , please enter other parameters\n");
         exit(1);
     }
 }
