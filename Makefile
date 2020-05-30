@@ -22,7 +22,7 @@ clean:
 		@rm -f test_bmp main_iplib test_iplib $(OBJECTS)
 		@echo "\n...done!\n"
 
-test_iplib: bmp.o ip_lib.o ip_lib.h bmp.h
+test_iplib: test_iplib.c bmp.o ip_lib.o ip_lib.h bmp.h
 	gcc test_iplib.c bmp.o ip_lib.o $(TEST_FLAGS) -o test_iplib
 
 main_ip_lib: $(OBJECTS) ip_lib.h bmp.h
