@@ -3,7 +3,7 @@
 */
 
 /**
- * ID GRUPPO    :   20
+ * ID GRUPPO         :   20
  * NOME GRUPPO       :   MVP
  *
  * MEMBRI:
