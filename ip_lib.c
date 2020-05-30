@@ -422,6 +422,7 @@ ip_mat *ip_mat_copy(ip_mat *in)
  * */
 ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end)
 {
+   
     ip_mat *subset_mat = NULL;
 
     not_null_ip_mat(t);
@@ -818,7 +819,6 @@ ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f)
     /* inizializza matrici per il calcolo della convolve */
     padded = ip_mat_padding(a, pad_h, pad_w);
     out = ip_mat_create(a->h, a->w, a->k, 0.0);
-
     for (ch = 0; ch < a->k; ch++)
     {
         /* questa operazione assicura che vengano applicati i primi a->k canali del filtro all'immagine, e se il filtro non ha canali sufficienti si applica sempre l'ultimo canale del filtro disponibile */
@@ -915,7 +915,6 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
         float *sums = (float *)malloc(sizeof(float) * k);
         ip_mat *out;
         out = ip_mat_create(h, w, k, 0.0);
-
         cx = w / 2;
         cy = h / 2;
         for (ch = 0; ch < k; ch++)
