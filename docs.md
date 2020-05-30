@@ -75,7 +75,7 @@ Tali funzioni sono qui di seguito elencate:
 
 
 			 
-- ### Challet_t 
+- ### Channel_t 
 		channel_t get_channel(ip_mat const *a, unsigned int ch);
 			data una ip_mat, ottieni una struttura canale, con riferimento al ch-esimo canale
 
