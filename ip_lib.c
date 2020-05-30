@@ -219,7 +219,7 @@ float convolve_channel(channel_t ch, channel_t filter, unsigned int start_h, uns
     }
     else
     {
-        printf("Invalid start_h or start_w \n");
+        printf("Invalid start_h or start_w, or channel too small \n");
         exit(1);
     }
 }
