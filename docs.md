@@ -1,6 +1,5 @@
 # iplib - Documentazione di progetto gruppo MVP 
 
-- [iplib - Documentazione di progetto](#iplib---documentazione-di-progetto)
   - [Introduzione](#introduzione)
   - [Note importanti](#note-importanti)
   - [Funzioni modificate](#funzioni-modificate)
@@ -9,7 +8,8 @@
   - [Membri del gruppo](#membri-del-gruppo)
 
 ## Introduzione
-Spiegazioni basilari funzioni ausiliarie gruppo MVP, ID Gruppo 20
+Spiegazioni basilari funzioni ausiliarie gruppo MVP, ID Gruppo 20. Il progetto è disponibile su GitHub a [questo link](https://github.com/EPMatt/c-2020).
+
 ## Note importanti
 Per la realizzazione del file ip_lib.c si è preferito, come visualizzazione delle matrici ip_mat l’ordine delle dimensioni k h w, cioè i campi che puntano ad array  multidimensionali frastagliati di dimensione h x w.
 
@@ -91,12 +91,6 @@ Tali funzioni sono qui di seguito elencate e suddivise in tipo restituito e scop
 
 ## Membri del gruppo
 
--	##### Ina Popescu 
-	##### matricola:	***REMOVED***
-	##### [Profilo Github](https://github.com/Ina-pps)
--	##### Matteo Agnoletto 
-	##### matricola:	***REMOVED***
-	##### [Profilo Github](https://github.com/EPMatt)
--	##### Lorenzo Armando Donatelli
-	##### matricola:	***REMOVED***
-	##### [Profilo Github](https://github.com/Donnyz) 
+-	[Ina Popescu](https://github.com/Ina-pps) (matricola ***REMOVED***)
+-	[Matteo Agnoletto](https://github.com/EPMatt) (matricola ***REMOVED***)
+-	[Lorenzo Armando Donatelli](https://github.com/Donnyz) (matricola: ***REMOVED***)
