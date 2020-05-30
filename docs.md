@@ -6,6 +6,7 @@
   - [Funzioni modificate](#funzioni-modificate)
   - [Funzioni di supporto](#funzioni-di-supporto)
   - [Makefile](#makefile)
+  - [Membri del gruppo](#membri-del-gruppo)
 
 ## Introduzione
 Spiegazioni basilari funzioni ausiliarie gruppo MVP
@@ -90,3 +91,15 @@ Tali funzioni sono qui di seguito elencate e suddivise in tipo restituito e scop
 
 
 ## Makefile
+
+## Membri del gruppo
+
+-	##### Ina Popescu 
+	##### matricola:	***REMOVED***
+	##### [Profilo Github](https://github.com/Ina-pps)
+-	##### Matteo Agnoletto 
+	##### matricola:	***REMOVED***
+	##### [Profilo Github](https://github.com/EPMatt)
+-	##### Lorenzo Armando Donatelli
+	##### matricola:	***REMOVED***
+	##### [Profilo Github](https://github.com/Donnyz) 
