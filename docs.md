@@ -8,7 +8,9 @@
   - [Membri del gruppo](#membri-del-gruppo)
 
 ## Introduzione
-Spiegazioni basilari funzioni ausiliarie gruppo MVP, ID Gruppo 20. Il progetto sarà disponibile su GitHub a [questo link](https://github.com/EPMatt/c-2020).
+Spiegazioni funzioni ausiliarie gruppo MVP, ID Gruppo 20. Il progetto sarà disponibile su GitHub a [questo link](https://github.com/EPMatt/c-2020).
+
+Per la realizzazione della libreria si è preso la decisione di implementare e arricchire il file ip_lib.c con delle funzioni ausiliarie in modo da rendere il codice più leggibile e ridurre la riscrittura del medesimo e per migliorare la manutenibilità.
 
 ## Note importanti
 Per la realizzazione del file ip_lib.c si è preferito, come visualizzazione delle matrici ip_mat l’ordine delle dimensioni k h w, cioè i campi che puntano ad array  multidimensionali frastagliati di dimensione h x w.
