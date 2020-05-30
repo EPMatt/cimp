@@ -2,6 +2,18 @@
  Created by Sebastiano Vascon on 23/03/20.
 */
 
+/**
+ * ID GRUPPO    :   20
+ * NOME GRUPPO       :   MVP
+ *
+ * MEMBRI:
+ *        Ina Popescu                  matricola:	***REMOVED***
+ *        Matteo Agnoletto             matricola:	***REMOVED***
+ *        Lorenzo Armando Donatelli    matricola:	***REMOVED***
+ * 
+ **/
+
+
 #include <stdio.h>
 #include "ip_lib.h"
 #include "bmp.h"
