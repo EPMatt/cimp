@@ -7,15 +7,6 @@
 #include "bmp.h"
 
 /* HELPERS */
-/* le funzioni, tipi e costanti definite in questa sezione non sono pensate per essere esportate nella libreria, ma sono definite solamente per uso interno */
-
-/* valori massimi e minimi, in virgola mobile e interi, che un pixel può assumere */
-#define MAX_PIXEL_FLOAT 255.0
-#define MIN_PIXEL_FLOAT 0.0
-
-/* costanti utilizzati nel richiamare la funzione ip_mat_puts */
-#define NO_COMPUTE_STATS 0
-#define COMPUTE_STATS 1
 
 /* data una ip_mat, ottieni una struttura canale, con riferimento al ch-esimo canale */
 channel_t get_channel(ip_mat const *a, unsigned int ch)
@@ -27,6 +18,7 @@ channel_t get_channel(ip_mat const *a, unsigned int ch)
     out.data = a->data[ch];
     return out;
 }
+
 /*
  * posiziona il contenuto del canale source nel canale dest, posizionando la cella 0,0 del canale source alla posizione row,col del canale dest
  * copia il contenuto di source fino a raggiungere il limite del canale dest, e soltanto se row,col sono indici validi per il canale dest

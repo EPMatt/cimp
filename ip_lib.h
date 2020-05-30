@@ -33,7 +33,15 @@ typedef struct {
 
 
 /* HELPERS */
+/* le funzioni, i tipi e le costanti sono pensate per utilizzo interno alla libreria */
 
+/* valori massimi e minimi, in virgola mobile, che un pixel può assumere */
+#define MAX_PIXEL_FLOAT 255.0
+#define MIN_PIXEL_FLOAT 0.0
+
+/* costanti utilizzati nel richiamare la funzione ip_mat_puts */
+#define NO_COMPUTE_STATS 0
+#define COMPUTE_STATS 1
 
 /* tipo canale: matrice di float */
 typedef struct
