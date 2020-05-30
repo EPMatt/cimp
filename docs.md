@@ -6,9 +6,10 @@
   - [Funzioni modificate](#funzioni-modificate)
   - [Funzioni di supporto](#funzioni-di-supporto)
   - [Makefile](#makefile)
+  - [Membri del gruppo](#membri-del-gruppo)
 
 ## Introduzione
-Spiegazioni basilari funzioni ausiliarie gruppo MVP
+Spiegazioni basilari funzioni ausiliarie gruppo MVP, ID Gruppo 20
 ## Note importanti
 Per la realizzazione del file ip_lib.c si è preferito, come visualizzazione delle matrici ip_mat l’ordine delle dimensioni k h w, cioè i campi che puntano ad array  multidimensionali frastagliati di dimensione h x w.
 
@@ -78,9 +79,6 @@ Tali funzioni sono qui di seguito elencate e suddivise in tipo restituito e scop
 		not_null_ip_mat(ip_mat *a);
 			restituisce un messaggio di errore nel caso in cui la matrice passata sia NULL
 
-		two_not_null_ip_mat(ip_mat *a, ip_mat *b);
- 			restituisce un messaggio di errore nel caso in cui una o più ip_mat siano null
-
 		equal_dimension(ip_mat *a, ip_mat *b);
 			Controlla se due ip_mmat hanno le stesse dimensioni oppre no
 			esce dal programma nel momento in cui una delle dimensioni é diversa
@@ -90,3 +88,15 @@ Tali funzioni sono qui di seguito elencate e suddivise in tipo restituito e scop
 
 
 ## Makefile
+
+## Membri del gruppo
+
+-	##### Ina Popescu 
+	##### matricola:	***REMOVED***
+	##### [Profilo Github](https://github.com/Ina-pps)
+-	##### Matteo Agnoletto 
+	##### matricola:	***REMOVED***
+	##### [Profilo Github](https://github.com/EPMatt)
+-	##### Lorenzo Armando Donatelli
+	##### matricola:	***REMOVED***
+	##### [Profilo Github](https://github.com/Donnyz) 

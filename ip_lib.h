@@ -4,6 +4,17 @@
  Sebastiano Vascon
 */
 
+/**
+ * ID GRUPPO         :   20
+ * NOME GRUPPO       :   MVP
+ *
+ * MEMBRI:
+ *        Ina Popescu                  matricola:	***REMOVED***
+ *        Matteo Agnoletto             matricola:	***REMOVED***
+ *        Lorenzo Armando Donatelli    matricola:	***REMOVED***
+ * 
+ **/
+
 #ifndef IP_LIB_H
 #define IP_LIB_H
 
