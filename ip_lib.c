@@ -201,10 +201,6 @@ void equal_dimension(ip_mat *a, ip_mat *b)
     }
 }
 
-/**
- * restituisce un messaggio di errore nel caso in cui la matrice passata sia NULL
- **/
-
 /* calcola la somma di prodotti tra il kernel fornito e il canale fornito, partendo dalla posizione (start_h,start_w) del canale */
 float convolve_channel(channel_t ch, channel_t filter, unsigned int start_h, unsigned int start_w)
 {
