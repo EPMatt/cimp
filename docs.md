@@ -40,12 +40,12 @@ Per la realizzazione della libreria si è preso la decisione di implementare e a
 
 Tali funzioni sono qui di seguito elencate:
 
-- ## Generiche 
+- ### Generiche 
 		float restrict_val(float val, float low, float high);
 			restringi il valore fornito all'interno del range low...high, estremi inclusi 
 		
 
-- ## ip_mat
+- ### ip_mat
                                                                                                                 
 		float min(ip_mat *a, int k);
 			funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo
@@ -75,7 +75,7 @@ Tali funzioni sono qui di seguito elencate:
 
 
 			 
-- ## Challet_t 
+- ### Challet_t 
 		channel_t get_channel(ip_mat const *a, unsigned int ch);
 			data una ip_mat, ottieni una struttura canale, con riferimento al ch-esimo canale
 
