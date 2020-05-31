@@ -96,13 +96,13 @@ float mean(ip_mat *a, int k);
 float restrict_val(float val, float low, float high);
 
 /**
- * Calcola la media per ogni pixel sui tre canali, prendendo un indice colonna e un indice riga.
+ * Calcola la media per il pixel (i,j) sui k canali della matrice passata come parametro.
  * 
  * */
 float mean_pixel_channel(ip_mat *a, unsigned int i, unsigned int j);
 
 /**
- * Controlla se due ip_mmat hanno le stesse dimensioni oppre no
+ * Controlla se due ip_mat hanno le stesse dimensioni oppure no
  * esce dal programma nel momento in cui una delle dimensioni é diversa
  */
 void equal_dimension(ip_mat *a, ip_mat *b);
