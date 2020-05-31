@@ -43,9 +43,9 @@ Strutture di tipo `channel_t` vengono utilizzate nella libreria per fornire un a
 
 Tra le funzioni preimplementate alcune sono state modificate come indicato in seguito.
 
-*`get_val` / `set_val`: modificato l’ordine delle dimensioni all'accesso dei dati nel campo `data` della struttura `ipmat` passata come parametro.
-*`ip_mat_to_bitmap` / `bitmap_to_ip_mat` e `ip_mat_show`/`ip_mat_show_stats`:  aggiunto controllo se il puntatore a `ip_mat` o a `bitmap` non sia `NULL`.
-*`ip_mat_to_bitmap` nella conversione dell'immagine i valori dei pixel recuperati dalla `ip_mat` passata come parametro vengono ristretti nell'intervallo di valori consentito per un pixel. Per svolgere tale compito si utilizza la funzione ausiliaria `restrict_val`.
+- `get_val` / `set_val`: modificato l’ordine delle dimensioni all'accesso dei dati nel campo `data` della struttura `ipmat` passata come parametro.
+- `ip_mat_to_bitmap` / `bitmap_to_ip_mat` e `ip_mat_show`/`ip_mat_show_stats`:  aggiunto controllo se il puntatore a `ip_mat` o a `bitmap` non sia `NULL`.
+- `ip_mat_to_bitmap` nella conversione dell'immagine i valori dei pixel recuperati dalla `ip_mat` passata come parametro vengono ristretti nell'intervallo di valori consentito per un pixel. Per svolgere tale compito si utilizza la funzione ausiliaria `restrict_val`.
 
 ## Funzioni di supporto
 
@@ -111,10 +111,11 @@ Calcola la somma di prodotti tra il kernel fornito e il canale fornito, partendo
 
 Il Makefile fornito con questo progetto fornisce diverse funzionalità aggiuntive rispetto alla semplice compilazione per l'ambiente di production.
 Si forniscono le seguenti recipe, richiamabili con il comando `make`:
-*`build` (default) compila i sorgenti per l'ambiente di production;
-*`test` compila i sorgenti per l'ambiente di testing;
-*`test-run` avvia il programma di test attraverso l'utility CLI `valgrind`;
-*`clean` elimina tutti i file risultanti dalla compilazione.
+
+- `build` (default) compila i sorgenti per l'ambiente di production;
+- `test` compila i sorgenti per l'ambiente di testing;
+- `test-run` avvia il programma di test attraverso l'utility CLI `valgrind`;
+- `clean` elimina tutti i file risultanti dalla compilazione.
 
 Make è in grado di determinare automaticamente se i file compilati sono stati generati per testing o production, e all'occorrenza effettuare un clean prima di ricompilare i sorgenti. Questo meccanismo è possibile grazie all'utilizzo del file esterno `.lastmake`, compilato dalle recipe `build` e `test`.
 
@@ -132,6 +133,6 @@ L'approccio adottato per la gestione degli errori si basa sul principio di limit
 
 ## Membri del gruppo
 
--[Ina Popescu](https://github.com/Ina-pps) (matricola ***REMOVED***)
--[Matteo Agnoletto](https://github.com/EPMatt) (matricola ***REMOVED***)
--[Lorenzo Armando Donatelli](https://github.com/Donnyz) (matricola: ***REMOVED***)
+- [Ina Popescu](https://github.com/Ina-pps) (matricola ***REMOVED***)
+- [Matteo Agnoletto](https://github.com/EPMatt) (matricola ***REMOVED***)
+- [Lorenzo Armando Donatelli](https://github.com/Donnyz) (matricola: ***REMOVED***)
