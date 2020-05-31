@@ -94,22 +94,29 @@ float min(ip_mat *a, int k)
     float minimo = 0.0, current;
 
     not_null_ip_mat(a);
-
-    minimo = get_val(a, 0, 0, k); /*metto come minimo il primo elemento della matrice*/
-
-    for (i = 0; i < a->h; i++)
+    if (k < a->k)
     {
-        for (j = 0; j < a->w; j++)
+        minimo = get_val(a, 0, 0, k); /*metto come minimo il primo elemento della matrice*/
+
+        for (i = 0; i < a->h; i++)
         {
-            current = get_val(a, i, j, k);
-            if (minimo > current)
-                minimo = current;
+            for (j = 0; j < a->w; j++)
+            {
+                current = get_val(a, i, j, k);
+                if (minimo > current)
+                    minimo = current;
+            }
         }
+        return minimo;
     }
-    return minimo;
+    else
+    {
+        printf("Invalid channel number\n");
+        exit(1);
+    }
 }
 
-/*funzione aux che mi calcola il valore massimo di un determinato canale k*/
+/*funzione aux che calcola il valore massimo di un determinato canale k*/
 float max(ip_mat *a, int k)
 {
     unsigned int i, j;
@@ -119,23 +126,30 @@ float max(ip_mat *a, int k)
 
     not_null_ip_mat(a);
 
-    /*all'inizio metto come massimo il primo elemento della matrice e dopo vado a verificare se c'è un altro elemento maggiore*/
-
-    massimo = get_val(a, 0, 0, k);
-
-    for (i = 0; i < a->h; i++)
+    if (k < a->k)
     {
-        for (j = 0; j < a->w; j++)
+        /*all'inizio metto come massimo il primo elemento della matrice e dopo vado a verificare se c'è un altro elemento maggiore*/
+        massimo = get_val(a, 0, 0, k);
+
+        for (i = 0; i < a->h; i++)
         {
-            current = get_val(a, i, j, k);
-            if (massimo < current)
-                massimo = current;
+            for (j = 0; j < a->w; j++)
+            {
+                current = get_val(a, i, j, k);
+                if (massimo < current)
+                    massimo = current;
+            }
         }
+        return massimo;
     }
-    return massimo;
+    else
+    {
+        printf("Invalid channel number\n");
+        exit(1);
+    }
 }
 
-/*mean è la funzione aux che mi permette di calcolare la media degli elementi che si trovano in un determinato canale k*/
+/*funzione aux che permette di calcolare la media degli elementi che si trovano in un determinato canale k*/
 float mean(ip_mat *a, int k)
 {
     unsigned int row, col;
@@ -145,14 +159,22 @@ float mean(ip_mat *a, int k)
     /*verifico se la ip_mat a != NULL*/
     not_null_ip_mat(a);
 
-    for (row = 0; row < a->h; row++)
+    if (k < a->k)
     {
-        for (col = 0; col < a->w; col++)
-            somma += get_val(a, row, col, k);
-    }
+        for (row = 0; row < a->h; row++)
+        {
+            for (col = 0; col < a->w; col++)
+                somma += get_val(a, row, col, k);
+        }
 
-    media = somma / (a->h * a->w);
-    return media;
+        media = somma / (a->h * a->w);
+        return media;
+    }
+    else
+    {
+        printf("Invalid channel number\n");
+        exit(1);
+    }
 }
 
 /* restringi il valore fornito all'interno del range low...high, estremi inclusi */
@@ -177,12 +199,20 @@ float mean_pixel_channel(ip_mat *a, unsigned int i, unsigned int j)
 
     not_null_ip_mat(a);
 
-    for (ch = 0; ch < a->k; ch++)
-        sup += get_val(a, i, j, ch);
+    if (i < a->h && j < a->w)
+    {
+        for (ch = 0; ch < a->k; ch++)
+            sup += get_val(a, i, j, ch);
 
-    sup /= a->k;
+        sup /= a->k;
 
-    return sup;
+        return sup;
+    }
+    else
+    {
+        printf("Invalid row or column number\n");
+        exit(1);
+    }
 }
 
 /**
@@ -426,12 +456,12 @@ ip_mat *ip_mat_copy(ip_mat *in)
  * */
 ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end)
 {
-   
+
     ip_mat *subset_mat = NULL;
 
     not_null_ip_mat(t);
 
-    if (row_start <= row_end && col_start <= col_end && row_end <= t->h && col_end <= t->w)
+    if (row_start < row_end && col_start < col_end && row_end <= t->h && col_end <= t->w)
     {
         unsigned int ch, row, col;
         subset_mat = ip_mat_create(row_end - row_start, col_end - col_start, t->k, 0.0);
@@ -449,7 +479,7 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
     }
     else
     {
-        printf("Invalid row,col indexes\n");
+        printf("Invalid row, col indexes\n");
         exit(1);
     }
 }
@@ -699,8 +729,6 @@ ip_mat *ip_mat_to_gray_scale(ip_mat *in)
     not_null_ip_mat(in);
 
     nuova = ip_mat_create(in->h, in->w, in->k, 0.0);
-
-    not_null_ip_mat(nuova);
 
     for (ch = 0; ch < nuova->k; ch++)
     {
@@ -959,7 +987,7 @@ ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, f
     }
     else
     {
-        printf("Passed parameters are invalid , please enter other parameters\n");
+        printf("Invalid parameters for creating a gaussian filter\n");
         exit(1);
     }
 }
@@ -1005,13 +1033,21 @@ void clamp(ip_mat *t, float low, float high)
     unsigned int ch, row, col;
     not_null_ip_mat(t);
 
-    for (ch = 0; ch < t->k; ch++)
+    if (low <= high)
     {
-        for (row = 0; row < t->h; row++)
+        for (ch = 0; ch < t->k; ch++)
         {
-            for (col = 0; col < t->w; col++)
-                set_val(t, row, col, ch, restrict_val(get_val(t, row, col, ch), low, high));
+            for (row = 0; row < t->h; row++)
+            {
+                for (col = 0; col < t->w; col++)
+                    set_val(t, row, col, ch, restrict_val(get_val(t, row, col, ch), low, high));
+            }
         }
+    }
+    else
+    {
+        printf("Invalid clamping bounds specified\n");
+        exit(1);
     }
 }
 
