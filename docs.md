@@ -87,6 +87,16 @@ Tali funzioni sono qui di seguito elencate:
 			calcola la somma di prodotti tra il kernel fornito e il canale fornito, partendo dalla posizione (start_h,start_w) del canale
 
 ## Makefile
+Il Makefile fornito con questo progetto fornisce diverse funzionalità aggiuntive rispetto alla semplice compilazione per un ambiente "production".
+Si forniscono le seguenti recipe, richiamabili con il comando `make`:
+* `build` (default) compila i sorgenti per un ambiente "production";
+* `test` compila i sorgenti per l'ambiente di testing;
+* `test-run` avvia il programma di test attraverso l'utility CLI `valgrind`;
+* `clean` elimina tutti i file risultanti dalla compilazione
+
+Make è in grado di determinare automaticamente se i file compilati sono stati generati per testing o production, e all'occorrenza effettuare un clean prima di ricompilare i sorgenti. Questo meccanismo è possibile grazie all'utilizzo del file esterno `.lastmake`, compilato dalle recipe `build` e `test`.
+
+Allo stesso modo, non è possibile eseguire la recipe `test-run` se i sorgenti sono stati compilati per un ambiente "production". Sarà necessario prima eseguire la recipe `test` e successivamente `test-run`.
 
 ## Membri del gruppo
 
