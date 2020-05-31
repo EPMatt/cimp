@@ -3,24 +3,43 @@ OBJECTS = main_iplib.o bmp.o ip_lib.o
 BUILD_FLAGS= -Wall --ansi --pedantic -lm -g3 -O3 -fsanitize=address -fsanitize=undefined -std=gnu89 -Wextra
 TEST_FLAGS= -Wall -lm -g -O1
 MAKE_ENV=build
+-include .lastmake
 
 build:
-		@echo "\nBuilding sources...\n"
-		@make -e MAKE_ENV=build main_ip_lib
-		@echo "\n...done!\n"
+		@echo "Building sources..."
+ifneq ($(LAST_MAKE),build)
+		@echo "Ooops! Last make was not a build one, must delete all generated files first!"
+		@make clean
+		@echo "Ready to build sources"
+endif
+		@echo 'LAST_MAKE=build' > .lastmake
+		@make -e main_ip_lib
+		@echo "...done!"
 
 test:
-		@echo "\nBuilding sources for testing...\n"
+		@echo "Building sources for testing..."
+ifneq ($(LAST_MAKE),test)
+		@echo "Ooops! Last make was not a test one, must delete all generated files first!"
+		@make clean
+		@echo "Ready to build sources for testing"
+endif
+		@echo 'LAST_MAKE=test' > .lastmake
 		@make -e MAKE_ENV=test main_ip_lib test_iplib
-		@echo "\n...done!\n"
+		@echo "...done!"
 
 test-run:
-	valgrind -v --leak-check=full --track-origins=yes ./test_iplib 
+ifneq ($(LAST_MAKE),test)
+		@echo "Ooops! Last make was not a test one, you can't run memory tests on a production build."
+		@echo "Run make test first, then run this command again."
+else
+		valgrind -v --leak-check=full --track-origins=yes ./test_iplib 
+endif
+	
 
 clean:
-		@echo "\nCleaning compiled files...\n"
-		@rm -f test_bmp main_iplib test_iplib $(OBJECTS)
-		@echo "\n...done!\n"
+		@echo "Cleaning compiled files..."
+		@rm -f test_bmp main_iplib test_iplib $(OBJECTS) .lastmake
+		@echo "...done!"
 
 test_iplib: test_iplib.c bmp.o ip_lib.o ip_lib.h bmp.h
 	gcc test_iplib.c bmp.o ip_lib.o $(TEST_FLAGS) -o test_iplib
