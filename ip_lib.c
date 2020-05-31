@@ -88,7 +88,7 @@ void not_null_ip_mat(ip_mat const *a)
 }
 
 /*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
-float min(ip_mat *a, int k)
+float min(ip_mat *a, unsigned int k)
 {
     unsigned int i, j;
     float minimo = 0.0, current;
@@ -117,7 +117,7 @@ float min(ip_mat *a, int k)
 }
 
 /*funzione aux che calcola il valore massimo di un determinato canale k*/
-float max(ip_mat *a, int k)
+float max(ip_mat *a, unsigned int k)
 {
     unsigned int i, j;
     float massimo = 0.0, current;
@@ -150,7 +150,7 @@ float max(ip_mat *a, int k)
 }
 
 /*funzione aux che permette di calcolare la media degli elementi che si trovano in un determinato canale k*/
-float mean(ip_mat *a, int k)
+float mean(ip_mat *a, unsigned int k)
 {
     unsigned int row, col;
     float somma = 0.0;

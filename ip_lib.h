@@ -28,20 +28,21 @@
 #define FLT_MIN 1.175494351e-38F /* min positive value */
 #define PI 3.141592654
 
-typedef struct{
+typedef struct
+{
     float min;
     float max;
     float mean;
-}stats;
+} stats;
 
-typedef struct {
+typedef struct
+{
     unsigned int w; /* <- larghezza */
     unsigned int h; /* <- altezza */
     unsigned int k; /* <- canali */
-    stats * stat;   /* <- statistiche per canale */
-    float *** data; /* <- matrice 3D di valori float */
-}ip_mat;
-
+    stats *stat;    /* <- statistiche per canale */
+    float ***data;  /* <- matrice 3D di valori float */
+} ip_mat;
 
 /* HELPERS */
 /* le funzioni, i tipi e le costanti sono pensate per utilizzo interno alla libreria */
@@ -84,13 +85,13 @@ void ip_mat_puts(ip_mat *dest, ip_mat const *source, unsigned int row, unsigned 
 void not_null_ip_mat(ip_mat const *a);
 
 /*funzione aux min che trova il minimo di un determinato canale k, riceve in input una ip_mat a e un canale k e restituisce un float che è il minimo  */
-float min(ip_mat *a, int k);
+float min(ip_mat *a, unsigned int k);
 
 /*funzione aux che mi calcola il valore massimo di un determinato canale k*/
-float max(ip_mat *a, int k);
+float max(ip_mat *a, unsigned int k);
 
 /*mean è la funzione aux che mi permette di calcolare la media degli elementi che si trovano in un determinato canale k*/
-float mean(ip_mat *a, int k);
+float mean(ip_mat *a, unsigned int k);
 
 /* restringi il valore fornito all'interno del range low...high, estremi inclusi */
 float restrict_val(float val, float low, float high);
@@ -117,7 +118,7 @@ float convolve_channel(channel_t ch, channel_t filter, unsigned int start_h, uns
 /* Inizializza una ip_mat con dimensioni h w e k. Ogni elemento è inizializzato a v.
  * Inoltre crea un vettore di stats per contenere le statische sui singoli canali.
  * */
-ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v);
+ip_mat *ip_mat_create(unsigned int h, unsigned int w, unsigned int k, float v);
 
 /* Libera la memoria (data, stat e la struttura)
  *
@@ -127,22 +128,22 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v);
 void ip_mat_free(ip_mat *a);
 
 /* Restituisce il valore in posizione i,j,k */
-float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k);
+float get_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k);
 
 /* Setta il valore in posizione i,j,k a v*/
-void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v);
+void set_val(ip_mat *a, unsigned int i, unsigned int j, unsigned int k, float v);
 
 /* Calcola il valore minimo, il massimo e la media per ogni canale
  * e li salva dentro la struttura ip_mat stats
  * */
-void compute_stats(ip_mat * t);
+void compute_stats(ip_mat *t);
 
 /* Inizializza una ip_mat con dimensioni w h e k.
  * Ogni elemento è generato da una gaussiana con media mean e deviazione std */
-void ip_mat_init_random(ip_mat * t, float mean, float std);
+void ip_mat_init_random(ip_mat *t, float mean, float std);
 
 /* Crea una copia di una ip_mat e lo restituisce in output */
-ip_mat * ip_mat_copy(ip_mat * in);
+ip_mat *ip_mat_copy(ip_mat *in);
 
 /* Restituisce una sotto-matrice, ovvero la porzione individuata da:
  * t->data[row_start...row_end][col_start...col_end][0...k]
@@ -152,7 +153,7 @@ ip_mat * ip_mat_copy(ip_mat * in);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  * */
-ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end);
+ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end);
 
 /* Concatena due ip_mat su una certa dimensione.
  * Ad esempio:
@@ -177,7 +178,7 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  * */
-ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione);
+ip_mat *ip_mat_concat(ip_mat *a, ip_mat *b, int dimensione);
 
 /**** PARTE 1: OPERAZIONI MATEMATICHE FRA IP_MAT ****/
 /* Esegue la somma di due ip_mat (tutte le dimensioni devono essere identiche).
@@ -185,28 +186,28 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b);
+ip_mat *ip_mat_sum(ip_mat *a, ip_mat *b);
 
 /* Esegue la sottrazione di due ip_mat (tutte le dimensioni devono essere identiche)
  *
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b);
+ip_mat *ip_mat_sub(ip_mat *a, ip_mat *b);
 
 /* Moltiplica un ip_mat per uno scalare c. Si moltiplica c per tutti gli elementi di "a"
  *
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_mul_scalar(ip_mat *a, float c);
+ip_mat *ip_mat_mul_scalar(ip_mat *a, float c);
 
 /* Aggiunge ad un ip_mat uno scalare c e lo restituisce in un nuovo tensore in output.
  *
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_add_scalar(ip_mat *a, float c);
+ip_mat *ip_mat_add_scalar(ip_mat *a, float c);
 
 /* Calcola la media di due ip_mat a e b. La media si calcola per coppie delle due matrici aventi gli stessi indici
  * C[i][j][k]= (A[i][j][k]+B[i]j[k])/2
@@ -214,7 +215,7 @@ ip_mat * ip_mat_add_scalar(ip_mat *a, float c);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b);
+ip_mat *ip_mat_mean(ip_mat *a, ip_mat *b);
 
 /**** PARTE 2: SEMPLICI OPERAZIONI SU IMMAGINI ****/
 /* Converte un'immagine RGB ad una immagine a scala di grigio.
@@ -225,7 +226,7 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  * */
-ip_mat * ip_mat_to_gray_scale(ip_mat * in);
+ip_mat *ip_mat_to_gray_scale(ip_mat *in);
 
 /* Effettua la fusione (combinazione convessa) di due immagini.
  *
@@ -234,7 +235,7 @@ ip_mat * ip_mat_to_gray_scale(ip_mat * in);
  *
  * Le variabili "a" e "b" devono avere le stesse dimensioni
  */
-ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha);
+ip_mat *ip_mat_blend(ip_mat *a, ip_mat *b, float alpha);
 
 /* Operazione di brightening: aumenta la luminosità dell'immagine
  * aggiunge ad ogni pixel un certo valore
@@ -242,7 +243,7 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_brighten(ip_mat * a, float bright);
+ip_mat *ip_mat_brighten(ip_mat *a, float bright);
 
 /* Operazione di corruzione con rumore gaussiano:
  * Aggiunge del rumore gaussiano all'immagine, il rumore viene enfatizzato
@@ -253,7 +254,7 @@ ip_mat * ip_mat_brighten(ip_mat * a, float bright);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  * */
-ip_mat * ip_mat_corrupt(ip_mat * a, float amount);
+ip_mat *ip_mat_corrupt(ip_mat *a, float amount);
 
 /**** PARTE 3: CONVOLUZIONE E FILTRI *****/
 
@@ -263,7 +264,7 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f);
+ip_mat *ip_mat_convolve(ip_mat *a, ip_mat *f);
 
 /* Aggiunge un padding all'immagine. Il padding verticale è pad_h mentre quello
  * orizzontale è pad_w.
@@ -277,22 +278,22 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f);
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-ip_mat * ip_mat_padding(ip_mat * a, unsigned int pad_h, unsigned int pad_w);
+ip_mat *ip_mat_padding(ip_mat *a, unsigned int pad_h, unsigned int pad_w);
 
 /* Crea un filtro di sharpening */
-ip_mat * create_sharpen_filter();
+ip_mat *create_sharpen_filter();
 
 /* Crea un filtro per rilevare i bordi */
-ip_mat * create_edge_filter();
+ip_mat *create_edge_filter();
 
 /* Crea un filtro per aggiungere profondità */
-ip_mat * create_emboss_filter();
+ip_mat *create_emboss_filter();
 
 /* Crea un filtro medio per la rimozione del rumore */
-ip_mat * create_average_filter(unsigned int h, unsigned int w, unsigned int k);
+ip_mat *create_average_filter(unsigned int h, unsigned int w, unsigned int k);
 
 /* Crea un filtro gaussiano per la rimozione del rumore */
-ip_mat * create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, float sigma);
+ip_mat *create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, float sigma);
 
 /* Effettua una riscalatura dei dati tale che i valori siano in [0,new_max].
  * Utilizzate il metodo compute_stat per ricavarvi il min, max per ogni canale.
@@ -306,13 +307,13 @@ ip_mat * create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, 
  *
  * Il risultato dell'operazione si salva in t
  * */
-void rescale(ip_mat * t, float new_max);
+void rescale(ip_mat *t, float new_max);
 
 /* Nell'operazione di clamping i valori <low si convertono in low e i valori >high in high.
  *
  * Il risultato dell'operazione si salva in t
  * */
-void clamp(ip_mat * t, float low, float high);
+void clamp(ip_mat *t, float low, float high);
 
 /**** METODI GIA' IMPLEMENTATI ****/
 /* Genera dei numeri casuali con distribuzione Normale
@@ -322,20 +323,19 @@ void clamp(ip_mat * t, float low, float high);
 float get_normal_random(float media, float std);
 
 /* Converte una Bitmap in una ip_mat*/
-ip_mat * bitmap_to_ip_mat(Bitmap * img);
+ip_mat *bitmap_to_ip_mat(Bitmap *img);
 
 /* Converte una ip_mat in una bitmap*/
-Bitmap * ip_mat_to_bitmap(ip_mat * t);
+Bitmap *ip_mat_to_bitmap(ip_mat *t);
 
 /* Visualizza i dati stampando in ordine le matrici rispetto
  * la terza dimensione.
  * Prima stamperemo t->data[...][...][0] poi t->data[...][...][1] ...
  * */
-void ip_mat_show(ip_mat * t);
+void ip_mat_show(ip_mat *t);
 
 /* Visualizza a video le statistiche per ogni canale.
  * */
-void ip_mat_show_stats(ip_mat * t);
+void ip_mat_show_stats(ip_mat *t);
 
 #endif /*IP_LIB_H*/
-
