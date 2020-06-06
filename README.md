@@ -22,7 +22,7 @@ After compiling, run `main_iplib` with no arguments. You'll receive a descriptiv
 
 The underlining bmp library provided with this project is an adaptation of the [Bitmap API](https://github.com/wernsey/bitmap) developed by [Werner Stoop](https://github.com/wernsey). The Bitmap API is released under the [MIT LICENSE](./LICENSE_BMP).
 
-Moreover, several parts of the code were originally provided as part of the assignment. Head to specific files for the respective copyright notice.
+Moreover, several parts of the code were originally provided as part of the assignment. Head to each specific file for the respective copyright notice.
 
 This project is released under the [MIT LICENSE](./LICENSE).
 
