@@ -133,6 +133,6 @@ L'approccio adottato per la gestione degli errori si basa sul principio di limit
 
 ## Membri del gruppo
 
-- [Ina Popescu](https://github.com/Ina-pps) (matricola ***REMOVED***)
-- [Matteo Agnoletto](https://github.com/EPMatt) (matricola ***REMOVED***)
-- [Lorenzo Armando Donatelli](https://github.com/Donnyz) (matricola: ***REMOVED***)
+- [Ina Popescu](https://github.com/Ina-pps)
+- [Matteo Agnoletto](https://github.com/EPMatt)
+- [Lorenzo Armando Donatelli](https://github.com/Donnyz)

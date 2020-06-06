@@ -1,3 +1,14 @@
+# CIMP - C Image Manipulation Program \
+  (https://github.com/EPMatt/cimp) \
+  \
+  (C) 2020 \
+  \
+  Ina Popescu   (https://github.com/ina-pps) \
+  Matteo Agnoletto   (https://github.com/EPMatt) \
+  Lorenzo Donatelli  (https://github.com/whitedemond) \
+  \
+  For licensing conditions related to this project, see LICENSE \
+
 OBJECTS = main_iplib.o bmp.o ip_lib.o
 
 BUILD_FLAGS= -Wall --ansi --pedantic -lm -g3 -O3 -fsanitize=address -fsanitize=undefined -std=gnu89 -Wextra

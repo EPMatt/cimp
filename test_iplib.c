@@ -1,16 +1,18 @@
 /**
- * test_iplib.c - Programma di test per la libreria iplib. Esegue tutte le funzioni della libreria in sequenza.
- * Pensato per essere eseguito con l'utility CLI valgrind.
- * 
- * ID GRUPPO         :   20
- * NOME GRUPPO       :   MVP
- *
- * MEMBRI:
- *        Ina Popescu                  matricola:	***REMOVED***
- *        Matteo Agnoletto             matricola:	***REMOVED***
- *        Lorenzo Armando Donatelli    matricola:	***REMOVED***
- * 
- **/
+*  CIMP - C Image Manipulation Program
+*  (https://github.com/EPMatt/cimp)
+*
+*  (C) 2020
+*
+*  Ina Popescu   (https://github.com/ina-pps)
+*  Matteo Agnoletto   (https://github.com/EPMatt)
+*  Lorenzo Donatelli  (https://github.com/whitedemond)  
+*  
+*  For licensing conditions related to this project, see LICENSE
+*
+*  test_iplib.c - Programma di test per la libreria iplib. Esegue tutte le funzioni della libreria in sequenza.
+*  Pensato per essere eseguito con l'utility CLI valgrind.
+*/
 
 #include <stdio.h>
 #include "ip_lib.h"
