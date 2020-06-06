@@ -16,7 +16,7 @@ The provided makefile contains several useful recipes for building the library:
 
 ## Usage
 
-After compiling, run `main_iplib` with no arguments. You'll receive a descriptive prompt on how to use the CLI utility. 
+After compiling, run `main_iplib` with no arguments. You'll receive a descriptive prompt on how to use the CLI utility.
 
 ## Licensing
 
