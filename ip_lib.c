@@ -16,7 +16,6 @@
  Created by Sebastiano Vascon on 23/03/20.
 */
 
-
 #include <stdio.h>
 #include "ip_lib.h"
 #include "bmp.h"
@@ -476,7 +475,7 @@ ip_mat *ip_mat_subset(ip_mat *t, unsigned int row_start, unsigned int row_end, u
             /* copia i dati per il canale */
             for (row = row_start; row < row_end; row++)
                 for (col = col_start; col < col_end; col++)
-                    set_val(subset_mat, row, col, ch, get_val(t, row, col, ch));
+                    set_val(subset_mat, row - row_start, col - col_start, ch, get_val(t, row, col, ch));
         }
         compute_stats(subset_mat);
         return subset_mat;
